@@ -21,6 +21,8 @@ import BtnUnitsRef from "@/app/erp/units/lib/btn-units-ref";
 import BtnLocationsRef from "@/app/erp/locations/lib/btn-locations-ref";
 import Pagination from "@/app/ui/pagination";
 import BtnLegalEntitiesRef from "@/app/erp/legal-entities/lib/btn-legal-entities-ref";
+import { useSearchParams } from 'next/navigation';
+import { fetchLegalEntity, fetchLegalEntityForm } from "@/app/erp/legal-entities/lib/legal-entities-actions";
 
 
 interface IEditFormProps {
@@ -32,6 +34,7 @@ interface IEditFormProps {
   unlockAction: ((tableName: string, id: string, userId: string) => Promise<void>) | null;
   readonly: boolean;
 }
+
 //#region zod schema
 const CarStatusSchema = z.enum(['норма', 'ремонт', 'ожидание', 'неизвестно']);
 const DocStatusSchema = z.enum(['draft', 'active', 'deleted']);
@@ -108,17 +111,46 @@ export default function CarEditForm(props: IEditFormProps) {
   }, [sessionUserId]);
   //#endregion
 
+  const currentSections = '{' + useDocumentStore.getState().userSections.map((section) => section.id).join(',') + '}';
+
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [formData, setFormData] = useState<FormData>(props.car as FormData);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [repairReason, setRepairReason] = useState<string>('');
+  const searchParams = useSearchParams();
+  const customerId = searchParams.get('customer_id');
 
   useEffect(() => {
-    setFormData((prev) => ({
-      ...prev,
-      author_id: sessionUserId,
-      tenant_id: docTenantId,
-    }));
-  }, []);
+    if (customerId) {
+      const fetchData = async () => {
+        try {
+          setIsLoading(true);
+          setError(null);
+          const customer = await fetchLegalEntityForm(customerId, currentSections);
+          setFormData((prev) => ({
+            ...prev,
+            author_id: sessionUserId,
+            tenant_id: docTenantId,
+            customer_id: customerId as string,
+            customer_name: customer.name,
+          }));
+        } catch (err) {
+          setError(err instanceof Error ? err.message : 'Произошла ошибка');
+        } finally {
+          setIsLoading(false);
+        }
+      };
+      fetchData();
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        author_id: sessionUserId,
+        tenant_id: docTenantId,
+      }));
+    }
+
+  }, [customerId, currentSections]);
 
   const validate = () => {
     const res = CarFormSchema.safeParse({
@@ -146,7 +178,11 @@ export default function CarEditForm(props: IEditFormProps) {
         await createCar(formData);
         // setMessageBoxText('Документ сохранен.');
         setTimeout(() => {
-          router.push('/erp/cars');
+          if (window.history.length > 1) {
+            router.back();
+          } else {
+            router.push('/erp/cars');
+          }
         }, 2000);
       } else {
         await updateCar(formData);
@@ -306,6 +342,8 @@ export default function CarEditForm(props: IEditFormProps) {
   //     setMessageBoxText('Документ не сохранен! :' + String(error) + ' ' + JSON.stringify(claim));
   //   }
   // }
+  if (isLoading) return <div>Загрузка...</div>;
+  if (error) return <div>Ошибка: {error}</div>;
   return (
     <div>
       {!pdfUrl && (

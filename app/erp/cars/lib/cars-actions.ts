@@ -58,7 +58,7 @@ export async function createCar(car: Car) {
         date_created,
         tenant_id,
         author_id,
-      ]
+      ],
     );
   } catch (error) {
     console.error("Не удалось создать car:", error);
@@ -128,12 +128,12 @@ export async function updateCar(car: Car) {
         author_id,
         doc_status,
         id,
-      ]
+      ],
     );
   } catch (error) {
     console.error("Не удалось обновить car:", error);
     throw new Error(
-      "Ошибка базы данных: Не удалось обновить car: " + String(error)
+      "Ошибка базы данных: Не удалось обновить car: " + String(error),
     );
   }
 
@@ -146,7 +146,7 @@ export async function deleteCar(id: string) {
   } catch (error) {
     console.error("Ошибка удаления car:", error);
     throw new Error(
-      "Ошибка базы данных: Не удалось удалить car: " + String(error)
+      "Ошибка базы данных: Не удалось удалить car: " + String(error),
     );
   }
   revalidatePath("/repair/cars");
@@ -180,7 +180,7 @@ export async function fetchCar(id: string, current_sections: string) {
       FROM your_cars
       WHERE id = $2
     `,
-      [current_sections, id]
+      [current_sections, id],
     );
 
     return data.rows[0];
@@ -224,7 +224,7 @@ export async function fetchCarForm(id: string, current_sections: string) {
       LEFT JOIN legal_entities AS customers ON cars.customer_id = customers.id
       WHERE cars.id = $2
     `,
-      [current_sections, id]
+      [current_sections, id],
     );
 
     return data.rows[0];
@@ -256,7 +256,7 @@ export async function fetchCars(current_sections: string) {
       FROM your_cars
       ORDER BY name ASC
     `,
-      [current_sections]
+      [current_sections],
     );
 
     return data.rows;
@@ -266,7 +266,11 @@ export async function fetchCars(current_sections: string) {
   }
 }
 
-export async function fetchCarsForm(current_sections: string) {
+export async function fetchCarsForm(
+  current_sections: string,
+  legalEntityId?: string,
+) {
+  const customerId = legalEntityId ?? null;
   try {
     const data = await pool.query<CarForm>(
       `
@@ -298,9 +302,10 @@ export async function fetchCarsForm(current_sections: string) {
       LEFT JOIN units ON cars.unit_id = units.id
       LEFT JOIN locations ON cars.location_id = locations.id
       LEFT JOIN legal_entities AS customers ON cars.customer_id = customers.id
+      WHERE $2::uuid IS NULL OR cars.customer_id = $2::uuid
       ORDER BY cars.name ASC
-    `,
-      [current_sections]
+      `,
+      [current_sections, customerId],
     );
 
     return data.rows;
@@ -316,7 +321,7 @@ export async function fetchCarsForm(current_sections: string) {
 
 export async function fetchFilteredCars(
   query: string,
-  currentPage: number, 
+  currentPage: number,
   current_sections: string,
 ) {
   const offset = (currentPage - 1) * ITEMS_PER_PAGE;
@@ -357,14 +362,14 @@ export async function fetchFilteredCars(
       ORDER BY cars.name ASC
       LIMIT $3 OFFSET $4
     `,
-      [current_sections, `%${query}%`, ITEMS_PER_PAGE, offset]
+      [current_sections, `%${query}%`, ITEMS_PER_PAGE, offset],
     );
 
     return cars.rows;
   } catch (error) {
     console.error("Ошибка фильтрации Автомобилей(таблица cars):", error);
     throw new Error(
-      "Не удалось загрузить отфильтрованные Автомобили: " + String(error)
+      "Не удалось загрузить отфильтрованные Автомобили: " + String(error),
     );
   }
 }
@@ -379,7 +384,7 @@ export async function fetchCarsPages(query: string, current_sections: string) {
       SELECT COUNT(*) FROM your_cars
       WHERE your_cars.name ILIKE $2
     `,
-      [current_sections, `%${query}%`]
+      [current_sections, `%${query}%`],
     );
 
     const totalPages = Math.ceil(Number(count.rows[0].count) / ITEMS_PER_PAGE);
@@ -387,7 +392,7 @@ export async function fetchCarsPages(query: string, current_sections: string) {
   } catch (error) {
     console.error("Ошибка подсчёта страниц cars:", error);
     throw new Error(
-      "Не удалось определить количество страниц: " + String(error)
+      "Не удалось определить количество страниц: " + String(error),
     );
   }
 }

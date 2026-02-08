@@ -8,6 +8,7 @@ import { fetchDocUserPermissions } from "@/app/admin/permissions/lib/permissios-
 import { LegalEntityForm } from "@/app/lib/definitions";
 import LegalEntityEditForm from "../[id]/edit/legal-entity-edit-form";
 import { fetchRegionsForm } from "../../regions/lib/region-actions";
+import { fetchCarsForm } from "../../cars/lib/cars-actions";
 
 export default async function Page() {
     //#region unified hooks and variables
@@ -60,6 +61,7 @@ export default async function Page() {
     const readonly_permission = checkReadonly(userPermissions, legalEntity, pageUser.id);
     const readonly = readonly_locked || readonly_permission;
     const regions = readonly ? [] : await fetchRegionsForm(current_sections);
+    const clients_cars = readonly ? [] : await fetchCarsForm(current_sections, legalEntity.id);
     return (
         <main>
             <Breadcrumbs
@@ -92,6 +94,7 @@ export default async function Page() {
             >
                 <LegalEntityEditForm
                     legalEntity={legalEntity}
+                    clients_cars={clients_cars}
                     readonly={readonly}
                     lockedByUserId={null}
                     unlockAction={null}

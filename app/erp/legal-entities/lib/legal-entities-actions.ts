@@ -202,7 +202,7 @@ editing_by_user_id,
 editing_since,
 timestamptz
 FROM your_legal_entities
-WHERE id = $2
+WHERE id = $2::uuid
 `,
       [current_sections, id]
     );
@@ -214,6 +214,8 @@ WHERE id = $2
 }
 
 export async function fetchLegalEntityForm(id: string, current_sections: string) {
+  console.log("fetchLegalEntityForm by id:", id);
+  console.log("current_sections:", current_sections);
   try {
     const data = await pool.query<LegalEntityForm>(
       `
@@ -247,7 +249,7 @@ COALESCE(sections.name, '') as section_name
 FROM your_legal_entities le
 LEFT JOIN sections ON le.section_id = sections.id
 LEFT JOIN regions ON le.region_id = regions.id
-WHERE le.id = $2
+WHERE le.id = $2::uuid
 `,
       [current_sections, id]
     );

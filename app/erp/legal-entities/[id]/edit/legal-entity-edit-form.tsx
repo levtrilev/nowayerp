@@ -1,7 +1,7 @@
 // LegalEntity EditForm
 'use client';
 import { useEffect, useState } from "react";
-import { LegalEntityForm, Region } from "@/app/lib/definitions";
+import { CarForm, LegalEntityForm, Region } from "@/app/lib/definitions";
 import { utcISOToLocalDateTimeInput } from "@/app/lib/common-utils";
 import { z } from "zod";
 import MessageBoxOKCancel from "@/app/lib/message-box-ok-cancel";
@@ -23,9 +23,11 @@ import { TagInput } from "@/app/lib/tags/tag-input";
 import { upsertTags } from "@/app/lib/tags/tags-actions";
 import BtnSectionsRef from "@/app/admin/sections/lib/btn-sections-ref";
 import BtnRegionsRef from "@/app/erp/regions/lib/btn-regions-ref";
+import CarsTableNaked from "@/app/erp/cars/lib/cars-table-naked";
 
 interface IEditFormProps {
     legalEntity: LegalEntityForm;
+    clients_cars: CarForm[];
     lockedByUserId: string | null;
     unlockAction: ((tableName: string, id: string, userId: string) => Promise<void>) | null;
     readonly: boolean;
@@ -209,12 +211,18 @@ export default function LegalEntityEditForm(props: IEditFormProps) {
         }));
         docChanged();
     };
+
+    const handleCreateClientsCar = () => {
+        // router.push('/erp/cars/create');
+        router.push(`/erp/cars/create?customer_id=${formData.id}`);
+    };
     const errors = showErrors ? validate() : undefined;
 
     return (
         <div>
-            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4 relative">
                 <div className="flex flex-col md:flex-row gap-4 w-full">
+                    {/* первая колонка */}
                     <div className="flex flex-col gap-4 w-full md:w-1/2">
                         {/* Название: */}
                         <InputField
@@ -293,12 +301,21 @@ export default function LegalEntityEditForm(props: IEditFormProps) {
                             readonly={props.readonly}
                             errors={errors?.contact?._errors}
                         />
+                        {/* автомобли клиента */}
+                        {!errors && formData.is_customer && <button
+                            id="add_car"
+                            className="absolute top-123 left-30 px-2 py-1 bg-green-300 text-sm text-white border-none rounded cursor-pointer z-50"
+                            type="button"
+                            onClick={handleCreateClientsCar}
+                        >
+                            добавить
+                        </button>}
                     </div>
-
+                    {/* вторая колонка */}
                     <div className="flex flex-col gap-4 w-full md:w-1/2">
                         {/* Покупатель? */}
                         <div className="flex items-center">
-                            <label className="w-6/16 text-sm font-medium p-2">Покупатель?</label>
+                            <label className="w-6/16 text-sm font-medium p-2">Клиент?</label>
                             <input
                                 type="checkbox"
                                 checked={formData.is_customer}
@@ -388,6 +405,8 @@ export default function LegalEntityEditForm(props: IEditFormProps) {
                         </p>
                     }
                 </div>
+                {formData.is_customer && 
+                <CarsTableNaked cars={props.clients_cars} showDeleteButton={false} />}
                 <div className="flex justify-between mt-4 mr-4">
                     <div className="flex w-full md:w-3/4">
                         <div className="w-full md:w-1/2">

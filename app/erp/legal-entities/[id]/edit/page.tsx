@@ -10,6 +10,7 @@ import { fetchLegalEntityForm } from "../../lib/legal-entities-actions";
 import LegalEntityEditForm from "./legal-entity-edit-form";
 import NotAuthorized, { isUserAuthorized } from "@/app/lib/not_authorized";
 import { fetchRegionsForm } from "@/app/erp/regions/lib/region-actions";
+import { fetchCarsForm } from "@/app/erp/cars/lib/cars-actions";
 
 async function Page(props: { params: Promise<{ id: string }> }) {
     //#region unified hooks and variables
@@ -61,6 +62,7 @@ async function Page(props: { params: Promise<{ id: string }> }) {
     const readonly = readonly_permission ? readonly_permission : !editingByCurrentUser;
     //#endregion
     const regions = readonly ? [] : await fetchRegionsForm(current_sections);
+    const clients_cars = readonly ? [] : await fetchCarsForm(current_sections, legalEntity.id);
     return (
         <div className="w-full">
             <div className="flex w-full items-center justify-between">
@@ -90,6 +92,7 @@ async function Page(props: { params: Promise<{ id: string }> }) {
             >
                 <LegalEntityEditForm
                     legalEntity={legalEntity}
+                    clients_cars={clients_cars}
                     lockedByUserId={null}
                     unlockAction={unlockRecord}
                     readonly={readonly}
