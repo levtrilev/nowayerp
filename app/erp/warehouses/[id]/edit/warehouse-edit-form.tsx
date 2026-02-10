@@ -24,7 +24,7 @@ interface IEditFormProps {
   unlockAction: ((tableName: string, id: string, userId: string) => Promise<void>) | null;
   readonly: boolean;
 }
-
+const DocStatusSchema = z.enum(['draft', 'active', 'deleted']);
 //#region Warehouse zod schema
 import { z } from "zod";
 const WarehouseFormSchemaFull = z.object({
@@ -39,6 +39,7 @@ const WarehouseFormSchemaFull = z.object({
   timestamptz: z.string().optional(),
   editing_by_user_id: z.string().nullable(),
   editing_since: z.string().nullable(),
+  doc_status: DocStatusSchema,
 });
 const WarehouseFormSchema = WarehouseFormSchemaFull.omit({
   id: true,
@@ -187,9 +188,34 @@ export default function WarehouseEditForm(props: IEditFormProps) {
                 readonly={props.readonly}
                 errors={errors?.section_name?._errors as string[] | undefined}
               />
+              <div className="flex justify-between mt-1">
+                <label
+                  htmlFor="doc_status"
+                  className="w-4/16 text-sm text-blue-900 font-medium flex items-center p-2"
+                >
+                  Статус:
+                </label>
+                <select
+                  name="doc_status"
+                  value={formData.doc_status}
+                  onChange={(e) => handleInputChange('doc_status', e.target.value)}
+                  className="w-13/16 border border-gray-200 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2"
+                  disabled={props.readonly}
+                >
+                  <option value="draft">Черновик</option>
+                  <option value="active">Активно</option>
+                  <option value="deleted">Удалено</option>
+                </select>
+              </div>
             </div>
           </div>
-
+          <div id="form-error" aria-live="polite" aria-atomic="true">
+            {errors &&
+              <p className="mt-2 text-sm text-red-500" key={'form_errors'}>
+                {JSON.stringify(errors)}
+              </p>
+            }
+          </div>
           {/* button area */}
           <div className="flex justify-between mt-4 mr-4">
             <div className="flex w-full md:w-3/4">

@@ -497,11 +497,18 @@ export default function CarEditForm(props: IEditFormProps) {
                     ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                     : 'bg-blue-400 text-white hover:bg-blue-100 hover:text-gray-500 cursor-pointer'
                     }`}
-                >
+                  >
                   Создать заявку
-=                </button>} */}
+                  =                </button>} */}
               </div>
             </div>
+          </div>
+          <div id="form-error" aria-live="polite" aria-atomic="true">
+            {errors &&
+              <p className="mt-2 text-sm text-red-500" key={'form_errors'}>
+                {JSON.stringify(errors)}
+              </p>
+            }
           </div>
           {/* button area */}
           <div className="flex justify-between mt-4 mr-4">

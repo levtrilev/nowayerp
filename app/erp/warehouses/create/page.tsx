@@ -38,7 +38,9 @@ export default async function Page() {
     timestamptz: "",
     editing_by_user_id: null,
     editing_since: null,
-    author_id: ""
+    author_id: "",
+    editor_id: "",
+    doc_status: "draft"
   };
 
   const readonly_permission = checkReadonly(userPermissions, warehouse, pageUser.id);

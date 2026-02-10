@@ -63,7 +63,12 @@ export default function WarehousesTable({
                       <td className="w-3/4 overflow-hidden whitespace-nowrap bg-white py-2 pl-6 pr-3 text-sm text-black">
                         <a
                           href={`/erp/warehouses/${warehouse.id}/edit`}
-                          className="text-blue-800 underline"
+                          // className="text-blue-800 underline"
+                          className={
+                            warehouse.doc_status !== 'active'
+                              ? 'text-gray-500 line-through hover:text-gray-600' // Неактивное состояние
+                              : 'text-blue-800 underline hover:text-blue-900'   // Активное состояние
+                          }
                         >
                           {warehouse.name}
                         </a>

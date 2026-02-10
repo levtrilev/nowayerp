@@ -1,8 +1,5 @@
-// This file contains type definitions for your data.
-// These types may be generated automatically if you're using an ORM such as Prisma.
 
 import { DateTime } from "next-auth/providers/kakao";
-import { z, number } from "zod";
 
 export type InOutType = 'in' | 'out';
 export type DocStatus = "draft" | "active" | "deleted";
@@ -10,18 +7,9 @@ export type Priority = "высокий" | "низкий";
 export type MachineStatus = "норма" | "ремонт" | "ожидание" | "неизвестно";
 export type CarStatus = "норма" | "ремонт" | "ожидание" | "неизвестно";
 
-export type Car = {
+export type Document = {
   id: string;
   name: string;
-  unit_id: string;
-  location_id: string;
-  gos_number: string;
-  make: string;
-  model: string;
-  vin: string;
-  year: string;
-  customer_id: string;
-  car_status: CarStatus;
   section_id: string;
   tenant_id: string;
   username?: string;
@@ -32,6 +20,18 @@ export type Car = {
   date_created?: Date;
   editing_by_user_id: string | null;
   editing_since: string | null;
+};
+
+export type Car = Document & {
+  unit_id: string;
+  location_id: string;
+  gos_number: string;
+  make: string;
+  model: string;
+  vin: string;
+  year: string;
+  customer_id: string;
+  car_status: CarStatus;
 };
 export type CarForm =  Car & {
   customer_name: string;
@@ -57,7 +57,7 @@ export type Period = {
   date_start: Date | string;
   date_end: Date | string;
 };
-export type StockMovement = {
+export type RecordMovement = {
   id: string;
   doc_id: string;
   doc_type: string;
@@ -69,14 +69,17 @@ export type StockMovement = {
   record_date: string;
   record_text: string;
   record_in_out: InOutType;
-  quantity: number;
   amount: number;
-  good_id: string;
-  warehouse_id: string;
   editing_by_user_id: string | null;
   editing_since: string | null;
   movement_status: DocStatus;
 };
+export type StockMovement = RecordMovement & {
+  quantity: number;
+  good_id: string;
+  warehouse_id: string;
+};
+
 export type StockMovementForm = StockMovement & {
   good_name: string;
   warehouse_name: string;
@@ -96,10 +99,8 @@ export type StockBalance = {
     section_id: string;
 };
 
-export type VATInvoice = {
-  id: string;
+export type VATInvoice = Document & {
   ledger_record_id: string;
-  name: string;
   date: string | null;
   number: string | null;
   description: string | null;
@@ -111,20 +112,10 @@ export type VATInvoice = {
   amount_excl_vat: number;
   vat_rate: number;
   vat_amount: number;
-  doc_status: DocStatus;
   approved_date?: string | null;
   approved_by_person_id: string | null;
   accepted_date?: string | null;
   accepted_by_person_id: string | null;
-  section_id: string;
-  tenant_id: string;
-  username?: string;
-  author_id: string;
-  editor_id: string;
-  timestamptz?: string;
-  date_created?: Date;
-  editing_by_user_id: string | null;
-  editing_since: string | null;
   access_tags: string[] | null;
   user_tags: string[] | null;
 };
@@ -151,28 +142,36 @@ export type VatInvoiceGoodsForm = {
   amount: number;
   section_id: string;
 };
-export type Warehouse = {
-  id: string;
-  name: string;
-  section_id: string;
-  tenant_id: string;
-  username?: string;
-  timestamptz?: string;
-  editing_by_user_id: string | null;
-  editing_since: string | null;
-  author_id: string | undefined;
+export type Warehouse = Document;
+// {
+//   id: string;
+//   name: string;
+//   section_id: string;
+//   tenant_id: string;
+//   username?: string;
+//   timestamptz?: string;
+//   editing_by_user_id: string | null;
+//   editing_since: string | null;
+//   author_id: string | undefined;
+// };
+export type Document1 = {
+  // id: string;
+  // name: string;
+  // section_id: string;
+  // tenant_id: string;
+  // username?: string;
+  // author_id: string;
+  editor_id: string;
+  doc_status: DocStatus;
+  // timestamptz?: string;
+  date_created?: Date;
+  // editing_by_user_id: string | null;
+  // editing_since: string | null;
 };
-export type WarehouseForm = {
-  id: string;
-  name: string;
-  section_id: string;
+
+
+export type WarehouseForm = Warehouse & {
   section_name: string;
-  tenant_id: string;
-  username?: string;
-  timestamptz?: string;
-  editing_by_user_id: string | null;
-  editing_since: string | null;
-  author_id: string | undefined;
 };
 export type Good = {
   id: string;
@@ -211,7 +210,7 @@ export type GoodForm = {
   price_wholesale: number; // Цена опт
   price_cost: number; // Цена закупки
   section_id: string;
-  section_name: string; // Раздел
+  section_name: string;
   tenant_id: string;
   username?: string;
   timestamptz?: string;

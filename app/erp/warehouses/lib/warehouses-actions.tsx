@@ -17,6 +17,7 @@ export async function createWarehouse(warehouse: Warehouse) {
     name,
     section_id,
     tenant_id,
+    doc_status
   } = warehouse;
 
   try {
@@ -26,14 +27,16 @@ export async function createWarehouse(warehouse: Warehouse) {
         name,
         username,
         section_id,
-        tenant_id
-      ) VALUES ($1, $2, $3, $4)
+        tenant_id,
+        doc_status
+      ) VALUES ($1, $2, $3, $4, $5)
       `,
       [
         name,
         username,
         section_id,
         tenant_id,
+        doc_status,
       ]
     );
   } catch (error) {
@@ -54,7 +57,7 @@ export async function updateWarehouse(warehouse: Warehouse) {
     name,
     section_id,
     tenant_id,
-
+    doc_status,
   } = warehouse;
 
   try {
@@ -65,14 +68,16 @@ export async function updateWarehouse(warehouse: Warehouse) {
         username = $2,
         section_id = $3,
         tenant_id = $4,
+        doc_status = $5,
         timestamptz = now()
-      WHERE id = $5
+      WHERE id = $6
       `,
       [
         name,
         username,
         section_id,
         tenant_id,
+        doc_status,
         id,
       ]
     );
@@ -110,7 +115,8 @@ export async function fetchWarehouse(id: string, current_sections: string) {
         editing_since,
         timestamptz,
         section_id,
-        tenant_id
+        tenant_id,
+        doc_status
       FROM your_warehouses
       WHERE id = $2
       `,
@@ -134,6 +140,7 @@ export async function fetchWarehouseForm(id: string, current_sections: string) {
         warehouses.username,
         warehouses.section_id,
         warehouses.tenant_id,
+        warehouses.doc_status,
         warehouses.editing_by_user_id,
         warehouses.editing_since,
         warehouses.timestamptz,
@@ -161,6 +168,7 @@ export async function fetchWarehouses(current_sections: string) {
         name,
         section_id,
         tenant_id,
+        doc_status,
         username,
         timestamptz
       FROM your_warehouses
@@ -186,12 +194,14 @@ export async function fetchWarehousesForm(current_sections: string) {
         warehouses.username,
         warehouses.section_id,
         warehouses.tenant_id,
+        warehouses.doc_status,
         warehouses.editing_by_user_id,
         warehouses.editing_since,
         warehouses.timestamptz,
         COALESCE(sections.name, '') as section_name
       FROM your_warehouses warehouses
       LEFT JOIN sections ON warehouses.section_id = sections.id
+      WHERE warehouses.doc_status = 'active'
       ORDER BY warehouses.name ASC
       `,
       [current_sections]
@@ -222,6 +232,7 @@ export async function fetchFilteredWarehouses(
         warehouses.username,
         warehouses.section_id,
         warehouses.tenant_id,
+        warehouses.doc_status,
         warehouses.editing_by_user_id,
         warehouses.editing_since,
         warehouses.timestamptz,
