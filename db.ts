@@ -24,7 +24,7 @@ const pool_neon = new Pool({
   ssl: { rejectUnauthorized: true },
 });
 
-// const pool = pool_neon;
-const pool = pool_localhost;
+const pool = pool_neon;
+// const pool = pool_localhost;
 
 export default pool;
