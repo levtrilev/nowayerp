@@ -1,0 +1,24 @@
+{
+  "scripts": {
+    "test:e2e": "cd tests/e2e && playwright test",
+    "test:e2e:ui": "cd tests/e2e && playwright test --ui",
+    "test:e2e:headed": "cd tests/e2e && playwright test --headed",
+    "test:e2e:debug": "cd tests/e2e && playwright test --debug",
+    "test:e2e:report": "cd tests/e2e && playwright test --reporter=line,allure-playwright",
+    "test:e2e:allure": "cd tests/e2e && allure serve allure-results",
+    "test:e2e:install": "cd tests/e2e && playwright install"
+  }
+}
+
+// # Запускаем тесты
+// npm run test:e2e
+
+// # С открытым браузером (видимым)
+// npm run test:e2e:headed
+
+// # С интерфейсом UI Mode
+// npm run test:e2e:ui
+
+// # После запуска тестов с отчетами
+// npm run test:e2e:report
+// npm run test:e2e:allure

@@ -4,7 +4,7 @@ import { PlusIcon, PencilIcon, TrashIcon, CheckIcon, XMarkIcon } from '@heroicon
 import { z } from 'zod';
 import { getVatInvoiceGoodsStore } from '../../lib/store/vatInvoiceGoodsStoreRegistry';
 import BtnGoodsRef from '@/app/erp/goods/lib/btn-goods-ref';
-import { fetchGoodsForm } from '@/app/erp/goods/lib/goods-actions';
+// import { fetchGoodsForm } from '@/app/erp/goods/lib/goods-actions';
 import { GoodForm } from '@/app/lib/definitions';
 
 const VatInvoiceGoodSchema = z.object({
@@ -15,7 +15,7 @@ const VatInvoiceGoodSchema = z.object({
   price: z.string().regex(/^\d+(\.\d{1,2})?$/, { message: "Цена: до 2 знаков после запятой" }),
 });
 
-type VatInvoiceGoodFormData = z.infer<typeof VatInvoiceGoodSchema>;
+// type VatInvoiceGoodFormData = z.infer<typeof VatInvoiceGoodSchema>;
 
 interface IVatInvoiceGoodsTableProps {
   readonly: boolean;

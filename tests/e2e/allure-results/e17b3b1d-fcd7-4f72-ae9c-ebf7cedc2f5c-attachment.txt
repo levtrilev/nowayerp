@@ -1,0 +1,47 @@
+Error loading page: page.goto: Test timeout of 30000ms exceeded.
+Call log:
+  - navigating to "http://localhost:3000/login", waiting until "load"
+
+    at C:\21\react\nextjs-dashboard\tests\e2e\tests\create_car_from_client.test.ts:8:18 {
+  [Symbol(step)]: {
+    location: {
+      file: 'C:\\21\\react\\nextjs-dashboard\\tests\\e2e\\tests\\create_car_from_client.test.ts',
+      line: 8,
+      column: 18
+    },
+    category: 'pw:api',
+    title: 'Navigate to "/login"',
+    apiName: 'page.goto',
+    params: {
+      url: 'http://localhost:3000/login',
+      timeout: 30000,
+      waitUntil: 'load'
+    },
+    group: undefined,
+    stepId: 'pw:api@35',
+    boxedStack: undefined,
+    steps: [],
+    attachmentIndices: [],
+    info: TestStepInfoImpl {
+      annotations: [],
+      _testInfo: [TestInfoImpl],
+      _stepId: 'pw:api@35',
+      _title: 'Navigate to "/login"',
+      _parentStep: undefined,
+      skip: [Function (anonymous)]
+    },
+    complete: [Function: complete],
+    endWallTime: 1770906932697,
+    error: {
+      message: 'Error: page.goto: Test timeout of 30000ms exceeded.\n' +
+        'Call log:\n' +
+        '\x1B[2m  - navigating to "http://localhost:3000/login", waiting until "load"\x1B[22m\n',
+      stack: 'Error: page.goto: Test timeout of 30000ms exceeded.\n' +
+        'Call log:\n' +
+        '\x1B[2m  - navigating to "http://localhost:3000/login", waiting until "load"\x1B[22m\n' +
+        '\n' +
+        '    at C:\\21\\react\\nextjs-dashboard\\tests\\e2e\\tests\\create_car_from_client.test.ts:8:18',
+      cause: undefined
+    }
+  }
+}

@@ -8,7 +8,7 @@ import { Location } from '@/app/lib/definitions';
 export function CreateLocation({ readonly }: { readonly: boolean }) {
   return (
     <Link
-      href={!readonly ? "/repair/locations/create" : "#"}
+      href={!readonly ? "/erp/locations/create" : "#"}
       className={`flex h-10 items-center rounded-lg 
         ${readonly ? 'bg-gray-300 px-4 text-sm font-medium text-gray-500 transition-colors hover:bg-gray-400'
           : 'bg-blue-600 px-4 text-sm font-medium text-white transition-colors hover:bg-blue-500'}
@@ -39,7 +39,7 @@ export function BtnEditLocationLink({ id }: { id: string }) {
   return (
     <Link
       key={"Edit"}
-      href={"/repair/locations/" + id + "/edit"}
+      href={"/erp/locations/" + id + "/edit"}
       className='flex h-10 items-center justify-center space-x-2 rounded-md border border-gray-200 
       bg-white p-2 text-sm font-medium hover:bg-gray-100 md:flex-none md:justify-start md:p-2 md:px-3'
     >

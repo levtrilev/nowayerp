@@ -1,15 +1,12 @@
 // Persons Page
 
 import Pagination from "@/app/ui/pagination";
-import TasksTable from "@/app/erp/tasks/lib/task-table";
 import Search from "@/app/ui/search";
-import { CreateTask } from "@/app/erp/tasks/lib/task-buttons";
 import { lusitana } from "@/app/ui/fonts";
 import { auth, getUser } from "@/auth";
 import { getCurrentSections } from "@/app/lib/common-actions";
 import { fetchDocUserPermissions } from "@/app/admin/permissions/lib/permissios-actions";
 import { checkReadonly } from "@/app/lib/common-utils";
-import { Task } from "@/app/lib/definitions";
 import { fetchPersonsPages } from "./lib/persons-actions";
 import { CreatePerson } from "./lib/persons-buttons";
 import PersonsTable from "./lib/persons-table";

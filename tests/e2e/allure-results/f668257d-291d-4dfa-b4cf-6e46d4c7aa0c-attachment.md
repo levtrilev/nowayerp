@@ -1,0 +1,129 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e4]:
+      - link "нафиг ERP" [ref=e5] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e7]:
+          - img [ref=e8]
+          - generic [ref=e10]:
+            - paragraph [ref=e11]: нафиг
+            - paragraph [ref=e12]: ERP
+      - generic [ref=e13]:
+        - link "Ремонт" [ref=e15] [cursor=pointer]:
+          - /url: "#"
+          - img [ref=e16]
+          - paragraph [ref=e18]: Ремонт
+        - link "Главное" [ref=e20] [cursor=pointer]:
+          - /url: /erp
+          - img [ref=e21]
+          - paragraph [ref=e24]: Главное
+        - link "Руководителю" [ref=e26] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=e27]
+          - paragraph [ref=e29]: Руководителю
+        - link "Торговля" [ref=e31] [cursor=pointer]:
+          - /url: "#"
+          - img [ref=e32]
+          - paragraph [ref=e34]: Торговля
+        - link "Справочники" [ref=e36] [cursor=pointer]:
+          - /url: "#"
+          - img [ref=e37]
+          - paragraph [ref=e39]: Справочники
+        - link "Помещения" [ref=e41] [cursor=pointer]:
+          - /url: "#"
+          - img [ref=e42]
+          - paragraph [ref=e44]: Помещения
+        - link "Администрирование" [ref=e46] [cursor=pointer]:
+          - /url: /admin
+          - img [ref=e47]
+          - paragraph [ref=e49]: Администрирование
+        - button "Sign Out" [ref=e52]:
+          - img [ref=e53]
+          - generic [ref=e55]: Sign Out
+    - generic [ref=e57]:
+      - generic [ref=e58]:
+        - heading "Юридическое лицо" [level=1] [ref=e59]
+        - generic [ref=e60]: "права на изменение для пользователя: user2@ya.ru"
+      - 'heading "id: c992cbc4-7640-47f2-8ec9-bc996ea4657b" [level=3] [ref=e61]'
+      - generic [ref=e63]:
+        - generic [ref=e64]:
+          - generic [ref=e65]:
+            - generic [ref=e67]:
+              - generic [ref=e68]: "Название:"
+              - textbox "Название:" [ref=e69]: МУРОМ
+            - generic [ref=e71]:
+              - generic [ref=e72]: "Полное:"
+              - textbox "Полное:" [ref=e73]: МУРОМ ЗАО
+            - generic [ref=e75]:
+              - generic [ref=e76]: "ИНН:"
+              - textbox "ИНН:" [ref=e77]: "5555555551"
+            - generic [ref=e79]:
+              - generic [ref=e80]: "Юр.адрес:"
+              - textbox "Юр.адрес:" [ref=e81]: город Муром
+            - generic [ref=e83]:
+              - generic [ref=e84]: "Телефон:"
+              - textbox "Телефон:" [ref=e85]: "11111111111111111111111111111111"
+            - generic [ref=e87]:
+              - generic [ref=e88]: "Email:"
+              - textbox "Email:" [ref=e89]: user2@ya.ru
+            - generic [ref=e91]:
+              - generic [ref=e92]: "Контакт:"
+              - textbox "Контакт:" [ref=e93]: FFFFFFFFFFFFFFFFFFFFFFFFFFFF
+            - button "добавить" [ref=e94] [cursor=pointer]
+          - generic [ref=e95]:
+            - generic [ref=e96]:
+              - generic [ref=e97]: Клиент?
+              - checkbox [checked] [ref=e98]
+            - generic [ref=e99]:
+              - generic [ref=e100]: Поставщик?
+              - checkbox [checked] [ref=e101]
+            - generic [ref=e103]:
+              - generic [ref=e104]: "КПП:"
+              - textbox "КПП:" [ref=e105]: "555555111"
+            - generic [ref=e107]:
+              - generic [ref=e108]: "Регион:"
+              - textbox "Регион:" [ref=e109]: Алтайский край
+              - button [ref=e111]:
+                - img [ref=e112]
+            - generic [ref=e115]:
+              - generic [ref=e116]: "Раздел:"
+              - textbox "Раздел:" [ref=e117]: 2_Бухучет
+              - button [ref=e119]:
+                - img [ref=e120]
+            - generic [ref=e122]:
+              - generic [ref=e123]: "Теги:"
+              - textbox "Введите теги..." [ref=e126]
+            - generic [ref=e127]:
+              - generic [ref=e128]: "Теги доступа:"
+              - textbox "Введите теги..." [ref=e131]
+        - table [ref=e137]:
+          - rowgroup [ref=e138]:
+            - row "Автомобиль Клиент Марка Модель Год выпуска Гос.номер" [ref=e139]:
+              - columnheader "Автомобиль" [ref=e140]
+              - columnheader "Клиент" [ref=e141]
+              - columnheader "Марка" [ref=e142]
+              - columnheader "Модель" [ref=e143]
+              - columnheader "Год выпуска" [ref=e144]
+              - columnheader "Гос.номер" [ref=e145]
+              - columnheader [ref=e146]
+          - rowgroup [ref=e147]:
+            - row "Mitsubishi ASX 2013 МУРОМ Mitsubishi ASX 2013 ю99-99эб" [ref=e148]:
+              - cell "Mitsubishi ASX 2013" [ref=e149]:
+                - link "Mitsubishi ASX 2013" [ref=e150] [cursor=pointer]:
+                  - /url: /erp/cars/68ec4391-c9e8-42e7-8efc-f49b20e7e885/edit
+              - cell "МУРОМ" [ref=e151]
+              - cell "Mitsubishi" [ref=e152]
+              - cell "ASX" [ref=e153]
+              - cell "2013" [ref=e154]
+              - cell "ю99-99эб" [ref=e155]
+              - cell [ref=e156]
+        - generic [ref=e158]:
+          - button "Сохранить" [ref=e160] [cursor=pointer]
+          - button "Закрыть и освободить" [ref=e162] [cursor=pointer]
+  - button "Open Next.js Dev Tools" [ref=e168] [cursor=pointer]:
+    - img [ref=e169]
+  - alert [ref=e172]
+```
