@@ -2,7 +2,7 @@
 // Role edit page
 
 import { fetchRoleForm } from "../../lib/roles-actions";
-import { RoleForm, User } from "@/app/lib/definitions";
+import { RoleForm, User, UserForm } from "@/app/lib/definitions";
 import { lusitana } from "@/app/ui/fonts";
 import RoleEditForm from "./role-edit-form";
 import { getCurrentSections, getRoleSections } from "@/app/lib/common-actions";
@@ -10,6 +10,7 @@ import { fetchTenantsAdmin, fetchTenantsSuperadmin } from "@/app/admin/tenants/l
 import { fetchSectionsForm, fetchSectionsFormAdmin, fetchSectionsFormSuperadmin } from "@/app/admin/sections/lib/sections-actions";
 import { auth, getUser } from "@/auth";
 import { fetchRolePermissions } from "@/app/admin/permissions/lib/permissios-actions";
+import { fetchUsersWithRoleAdmin } from "@/app/admin/users/lib/users-actions";
 
 async function Page(props: { params: Promise<{ id: string }> }) {
     const session = await auth();
@@ -32,6 +33,7 @@ async function Page(props: { params: Promise<{ id: string }> }) {
     const tenants = isSuperadmin ? await fetchTenantsSuperadmin() : await fetchTenantsAdmin(role.tenant_id);
     // const role_permissions = isAdmin ? await fetchPermissionsAdmin(user.tenant_id, role.id) : [];
     const role_permissions = await fetchRolePermissions(role.tenant_id, role.id);
+    const role_users = await fetchUsersWithRoleAdmin(role.id, role.tenant_id); // fetchRoleUsers(role.tenant_id, role.id);
     return (
         <div className="w-full">
             <div className="flex w-full items-center justify-between">
@@ -43,7 +45,8 @@ async function Page(props: { params: Promise<{ id: string }> }) {
                 role_sections={role_sections}
                 tenants={tenants}
                 userSections={sections}
-                role_permissions={role_permissions} />
+                role_permissions={role_permissions}
+                role_users={role_users} />
         </div>
 
     );

@@ -2,7 +2,7 @@
 
 'use client';
 import { useEffect, useState } from "react";
-import { Permission, RoleForm, SectionForm, Tenant } from "@/app/lib/definitions";
+import { Permission, RoleForm, SectionForm, Tenant, UserForm } from "@/app/lib/definitions";
 import Link from "next/link";
 import BtnTenantsRef from "@/app/admin/tenants/lib/btn-tenants-ref";
 import BtnSectionsRef from "@/app/admin/sections/lib/btn-sections-ref";
@@ -17,6 +17,7 @@ import {
 } from "@/app/store/useDocumentStore";
 import { updRole } from "../../lib/store/use-role-store";
 import PermissionsTable from "@/app/admin/permissions/lib/permissions-table";
+import UsersTable from "@/app/admin/users/lib/users-table";
 
 interface IRoleEditFormProps {
   role: RoleForm,
@@ -24,6 +25,7 @@ interface IRoleEditFormProps {
   tenants: Tenant[],
   userSections: SectionForm[],
   role_permissions: Permission[],
+  role_users: UserForm[],
 }
 
 export default function RoleEditForm(props: IRoleEditFormProps) {
@@ -303,6 +305,7 @@ export default function RoleEditForm(props: IRoleEditFormProps) {
       </div>
       <MessageBoxOKCancel />
       <PermissionsTable permissions={props.role_permissions} admin={true} allRoles={[role]} />
+      <UsersTable users={props.role_users} admin={true} />
     </div >
 
   );
