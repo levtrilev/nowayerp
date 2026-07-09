@@ -12,9 +12,9 @@ import MessageBoxOKCancel from "@/app/lib/message-box-ok-cancel";
 import { useRouter } from 'next/navigation';
 import {
   setIsCancelButtonPressed, setIsDocumentChanged, setIsMessageBoxOpen,
-  setIsOKButtonPressed, setIsShowMessageBoxCancel, setMessageBoxText, useDocumentStore, useIsDocumentChanged,
+  setIsOKButtonPressed, setIsShowMessageBoxCancel, setMessageBoxText, useIsDocumentChanged,
   useMessageBox
-} from "@/app/store/useDocumentStore";
+} from "@/app/store/useDocumentStore"; // , useDocumentStore
 import { updRole } from "../../lib/store/use-role-store";
 import PermissionsTable from "@/app/admin/permissions/lib/permissions-table";
 import UsersTable from "@/app/admin/users/lib/users-table";
@@ -23,7 +23,7 @@ interface IRoleEditFormProps {
   role: RoleForm,
   role_sections: SectionForm[],
   tenants: Tenant[],
-  userSections: SectionForm[],
+  // userSections: SectionForm[],
   role_permissions: Permission[],
   role_users: UserForm[],
 }
@@ -145,15 +145,7 @@ export default function RoleEditForm(props: IRoleEditFormProps) {
     setIsDocumentChanged(false);
     setIsMessageBoxOpen(false);
   }, [msgBox.isOKButtonPressed, router]);
-  useEffect(() => {
 
-    const initializeStoreUserSections = () => {
-      if (props.userSections) {
-        useDocumentStore.getState().setUserSections(props.userSections);
-      }
-    };
-    initializeStoreUserSections();
-  }, [props.userSections]);
   return (
 
     <div >
@@ -304,8 +296,14 @@ export default function RoleEditForm(props: IRoleEditFormProps) {
         </div>
       </div>
       <MessageBoxOKCancel />
+      <div className="flex flex-row pt-8 gap-4 w-full md:w-1/2">
+        <h2 className="px-2 pt-1 font-medium">Полномочия роли:</h2>
+      </div>
       <PermissionsTable permissions={props.role_permissions} admin={true} allRoles={[role]} />
-      <UsersTable users={props.role_users} admin={true} />
+      <div className="flex flex-row pt-8 gap-4 w-full md:w-1/2">
+        <h2 className="px-2 pt-1 font-medium">Пользователи, имеющие данную роль:</h2>
+      </div>
+      <UsersTable users={props.role_users} admin={true} allowDelete={false} />
     </div >
 
   );

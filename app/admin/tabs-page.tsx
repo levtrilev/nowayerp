@@ -33,7 +33,7 @@ export const TabsPage: React.FC<ITabsPageProps> = (props: ITabsPageProps) => {
             {(tab === 'users') &&
                 <>
                     { (props.isSuperadmin || props.isAdmin) && <NewUser tenants={props.tenants} /> }
-                    <UsersTable users={props.users} admin={ (props.isSuperadmin || props.isAdmin) }/>
+                    <UsersTable users={props.users} admin={ (props.isSuperadmin || props.isAdmin) }  allowDelete={true}/>
                 </>
             }
             {tab === 'sections' &&

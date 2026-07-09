@@ -34,7 +34,7 @@ async function Page() {
                 <h1 className={`${lusitana.className} text-2xl`}>Пользователи</h1>
             </div>
             { (isSuperadmin || isAdmin) && <NewUser tenants={tenants} /> }
-            <UsersTable users={users} admin={isSuperadmin || isAdmin} />
+            <UsersTable users={users} admin={isSuperadmin || isAdmin}  allowDelete={true}/>
         </div>
     );
 }

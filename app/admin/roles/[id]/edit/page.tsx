@@ -4,13 +4,14 @@
 import { fetchRoleForm } from "../../lib/roles-actions";
 import { RoleForm, User, UserForm } from "@/app/lib/definitions";
 import { lusitana } from "@/app/ui/fonts";
-import RoleEditForm from "./role-edit-form";
+// import RoleEditForm from "./role-edit-form";
 import { getCurrentSections, getRoleSections } from "@/app/lib/common-actions";
 import { fetchTenantsAdmin, fetchTenantsSuperadmin } from "@/app/admin/tenants/lib/tenants-actions";
 import { fetchSectionsForm, fetchSectionsFormAdmin, fetchSectionsFormSuperadmin } from "@/app/admin/sections/lib/sections-actions";
 import { auth, getUser } from "@/auth";
 import { fetchRolePermissions } from "@/app/admin/permissions/lib/permissios-actions";
 import { fetchUsersWithRoleAdmin } from "@/app/admin/users/lib/users-actions";
+import StateWrap from "./state_wrap";
 
 async function Page(props: { params: Promise<{ id: string }> }) {
     const session = await auth();
@@ -34,13 +35,14 @@ async function Page(props: { params: Promise<{ id: string }> }) {
     // const role_permissions = isAdmin ? await fetchPermissionsAdmin(user.tenant_id, role.id) : [];
     const role_permissions = await fetchRolePermissions(role.tenant_id, role.id);
     const role_users = await fetchUsersWithRoleAdmin(role.id, role.tenant_id); // fetchRoleUsers(role.tenant_id, role.id);
+
     return (
         <div className="w-full">
             <div className="flex w-full items-center justify-between">
                 <h1 className={`${lusitana.className} text-2xl`}>Роль</h1>
             </div>
             <h3 className="text-xs font-medium text-gray-400">id: {id}</h3>
-            <RoleEditForm
+            <StateWrap
                 role={role}
                 role_sections={role_sections}
                 tenants={tenants}

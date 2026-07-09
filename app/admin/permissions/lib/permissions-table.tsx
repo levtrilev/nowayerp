@@ -47,7 +47,7 @@ export const PermissionsTable: React.FC<IDoctypeTableProps> = (props: IDoctypeTa
                 <div className="rounded-lg bg-gray-50 p-2 md:pt-0">
                     {/* Таблица для больших экранов */}
                     <table className="table-fixed hidden w-full rounded-md text-gray-900 md:table">
-                        <thead className="rounded-md bg-gray-50 text-left text-sm font-normal">
+                        <thead className="rounded-md bg-gray-50 text-left text-gray-400 text-sm font-normal">
                             <tr>
                                 <th scope="col" className="w-3/16 overflow-hidden px-0 py-5 font-medium sm:pl-6">
                                     Тип документа

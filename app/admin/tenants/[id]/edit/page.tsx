@@ -32,7 +32,7 @@ async function Page(props: { params: Promise<{ id: string }> }) {
             <h3 className="text-xs font-medium text-gray-400">id: {id}</h3>
             <TenantEditForm tenant={tenant} admin={ isAdmin || isSuperadmin } />
             {/* <TenantsTable tenants={tenants} superadmin={isSuperadmin} /> */}
-            <UsersTable users={tenantUsers} admin={false}/>
+            <UsersTable users={tenantUsers} admin={false}  allowDelete={true}/>
         </div>
 
     );

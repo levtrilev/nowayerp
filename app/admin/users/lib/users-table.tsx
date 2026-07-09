@@ -11,6 +11,7 @@ import MessageBoxOKCancel from "@/app/lib/message-box-ok-cancel";
 interface IUsersTableProps {
     users: UserForm[],
     admin: boolean,
+    allowDelete: boolean,
 }
 export const UsersTable: React.FC<IUsersTableProps> = (props: IUsersTableProps) => {
 
@@ -80,26 +81,26 @@ export const UsersTable: React.FC<IUsersTableProps> = (props: IUsersTableProps) 
                         ))}
                     </div>
                     <table className="hidden min-w-full text-gray-900 md:table">
-                        <thead className="rounded-lg text-left text-sm font-normal">
+                        <thead className="rounded-lg text-left text-gray-400 text-sm font-normal">
                             <tr>
-                                <th scope="col" className="px-3 py-5 font-medium">
+                                <th scope="col" className="w-5/16 px-3 py-5 font-medium">
                                     Email
                                 </th>
-                                <th scope="col" className="px-4 py-5 font-medium sm:pl-6">
+                                <th scope="col" className="w-2/8 px-4 py-5 font-medium sm:pl-6">
                                     Организация
                                 </th>
-                                <th scope="col" className="px-3 py-5 font-medium">
+                                <th scope="col" className="w-2/8 px-3 py-5 font-medium">
                                     admin?
                                 </th>
-                                <th scope="col" className="px-3 py-5 font-medium">
+                                <th scope="col" className="w-1/8 px-3 py-5 font-medium">
                                     Дата создания
                                 </th>
-                                <th scope="col" className="px-3 py-5 font-medium">
-                                    Действия
+                                <th scope="col" className="w-1/8 px-3 py-5 font-medium">
+                                    
                                 </th>
-                                <th scope="col" className="relative py-3 pl-6 pr-3">
+                                {/* <th scope="col" className="relative py-3 pl-6 pr-3">
                                     <span className="sr-only">Edit</span>
-                                </th>
+                                </th> */}
                             </tr>
                         </thead>
                         <tbody className="bg-white">
@@ -108,30 +109,42 @@ export const UsersTable: React.FC<IUsersTableProps> = (props: IUsersTableProps) 
                                     key={user.id}
                                     className="w-full border-b border-gray-200 py-3 text-sm last-of-type:border-none [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg"
                                 >
-                                    <td className="whitespace-nowrap px-3 py-3">
+                                    {/* <td className="whitespace-nowrap px-3 py-3">
                                         {user.email}
+                                    </td> */}
+                                    <td className="w-5/16 overflow-hidden whitespace-nowrap text-ellipsis bg-white py-1 pl-0 text-left  
+                      pr-3 text-sm text-black group-first-of-type:rounded-md group-last-of-type:rounded-md sm:pl-6">
+                                        <div className="flex items-left gap-3">
+                                            {props.admin && !user.is_superadmin ? <a
+
+                                                href={"/admin/users/" + user.id}
+                                                className="text-blue-800 underline"
+                                            >{user.email.substring(0, 30)}</a> :
+                                                <p>{user.email.substring(0, 30)}</p>}
+                                        </div>
                                     </td>
-                                    <td className="whitespace-nowrap py-3 pl-6 pr-3">
+                                    <td className="w-2/8 whitespace-nowrap py-3 pl-6 pr-3">
                                         <div className="flex items-center gap-3">
                                             <p>{user.tenant_name}</p>
                                         </div>
                                     </td>
-                                    <td className="whitespace-nowrap px-3 py-3">
+                                    <td className="w-2/8 whitespace-nowrap px-3 py-3">
                                         {user.is_superadmin ? "super" : user.is_admin ? "admin" : " -- "}
                                     </td>
                                     <td className="whitespace-nowrap px-3 py-3">
                                         {formatDateToLocal(datePlaceHolder)}
                                     </td>
-                                    <td className="whitespace-nowrap py-3 pl-6 pr-3">
+                                    <td className="w-1/8 whitespace-nowrap py-3 pl-6 pr-3">
                                         <div className="flex justify-end gap-3">
                                             {/* {props.admin && !user.is_superadmin && <BtnDeleteUser id={user.id} />} */}
-                                            {props.admin && !user.is_superadmin && <button className="rounded-md border border-gray-200 p-2 h-10 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            {props.allowDelete && props.admin && !user.is_superadmin && <button className="rounded-md border border-gray-200 p-2 h-10 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                                 onClick={() => {
                                                     // delUser(user.email);
                                                     handleDelete(user);
                                                 }}>
                                                 <TrashIcon className="w-5 h-5 text-gray-800" />
-                                            </button>}                                            {props.admin && !user.is_superadmin && <BtnEditUserLink id={user.id} />}
+                                            </button>}                                            
+                                            {/* {props.admin && !user.is_superadmin && <BtnEditUserLink id={user.id} />} */}
                                         </div>
                                     </td>
                                 </tr>
