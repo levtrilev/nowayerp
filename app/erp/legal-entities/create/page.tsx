@@ -99,6 +99,7 @@ export default async function Page() {
                     lockedByUserId={null}
                     unlockAction={null}
                     regions={regions}
+                    current_sections={current_sections}
                 />
             </DocWrapper>
         </main>

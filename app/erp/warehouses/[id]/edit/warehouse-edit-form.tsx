@@ -199,7 +199,7 @@ export default function WarehouseEditForm(props: IEditFormProps) {
                   name="doc_status"
                   value={formData.doc_status}
                   onChange={(e) => handleInputChange('doc_status', e.target.value)}
-                  className="w-13/16 border border-gray-200 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2"
+                  className="w-13/16 border border-gray-200 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2 disabled:bg-gray-100 disabled:text-gray-400"
                   disabled={props.readonly}
                 >
                   <option value="draft">Черновик</option>

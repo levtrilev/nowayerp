@@ -2,9 +2,9 @@ import { CarForm } from "@/app/lib/definitions";
 import BtnDeleteCar from "./btn-delete-car";
 import { BtnEditCarLink } from "./cars-buttons";
 
-export default function CarsTableNaked({cars, showDeleteButton = false, loadCars}
-    :{cars: CarForm[], showDeleteButton?: boolean, loadCars?: () => Promise<void>}) {
-return (
+export default function CarsTableNaked({ cars, showDeleteButton = false, loadCars, userId, current_sections, readonly_permission }:
+  { cars: CarForm[], showDeleteButton?: boolean, loadCars?: () => Promise<void>, userId: string, current_sections: string, readonly_permission: boolean }) {
+  return (
     <div className="w-full">
       <div className="mt-6 flow-root">
         <div className="overflow-x-auto">
@@ -52,7 +52,13 @@ return (
                       </td>
                       <td className="w-1/12 whitespace-nowrap py-2 pr-3">
                         <div className="flex justify-end gap-3">
-                          {showDeleteButton && <BtnDeleteCar id={car.id} name={car.name} onDelete={loadCars ?? (() => {})} />}
+                          {showDeleteButton && <BtnDeleteCar
+                            id={car.id}
+                            name={car.name}
+                            userId={userId}
+                            current_sections={current_sections}
+                            readonly_permission={readonly_permission}
+                            onDelete={loadCars ?? (() => { })} />}
                         </div>
                       </td>
                     </tr>
@@ -75,7 +81,13 @@ return (
                       </h3>
                       <div className="flex gap-2">
                         <BtnEditCarLink id={car.id} />
-                        {showDeleteButton && <BtnDeleteCar id={car.id} name={car.name} onDelete={loadCars ?? (() => {})} />}
+                        {showDeleteButton && <BtnDeleteCar
+                          id={car.id}
+                          name={car.name}
+                          userId={userId}
+                          current_sections={current_sections}
+                          readonly_permission={readonly_permission}
+                          onDelete={loadCars ?? (() => { })} />}
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-2">
@@ -88,5 +100,5 @@ return (
         </div>
       </div>
     </div>
-    );
+  );
 }

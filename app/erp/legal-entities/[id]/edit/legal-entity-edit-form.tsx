@@ -32,7 +32,7 @@ interface IEditFormProps {
     unlockAction: ((tableName: string, id: string, userId: string) => Promise<void>) | null;
     readonly: boolean;
     regions: Region[];
-    // sections: SectionForm[];
+    current_sections: string;
 }
 
 //#region LegalEntity zod schema
@@ -405,8 +405,14 @@ export default function LegalEntityEditForm(props: IEditFormProps) {
                         </p>
                     }
                 </div>
-                {formData.is_customer && 
-                <CarsTableNaked cars={props.clients_cars} showDeleteButton={false} />}
+                {formData.is_customer &&
+                    <CarsTableNaked
+                        cars={props.clients_cars}
+                        showDeleteButton={false}
+                        userId={sessionUser.id}
+                        current_sections={props.current_sections}
+                        readonly_permission={true}
+                    />}
                 <div className="flex justify-between mt-4 mr-4">
                     <div className="flex w-full md:w-3/4">
                         <div className="w-full md:w-1/2">

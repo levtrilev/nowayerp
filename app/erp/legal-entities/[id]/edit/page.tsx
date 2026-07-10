@@ -97,6 +97,7 @@ async function Page(props: { params: Promise<{ id: string }> }) {
                     unlockAction={unlockRecord}
                     readonly={readonly}
                     regions={regions}
+                    current_sections={current_sections}
                 />
             </DocWrapper>
         </div>

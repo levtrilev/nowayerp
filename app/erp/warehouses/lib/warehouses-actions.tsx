@@ -102,7 +102,7 @@ export async function deleteWarehouse(id: string) {
 //#endregion
 
 //#region Fetch Warehouses
-export async function fetchWarehouse(id: string, current_sections: string) {
+export async function fetchWarehouse(id: string, current_sections: string): Promise<Warehouse> {
   try {
     const data = await pool.query<Warehouse>(
       `

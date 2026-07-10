@@ -4,10 +4,12 @@
 import { TrashIcon } from '@heroicons/react/24/outline';
 import { useState, useRef } from 'react';
 import MessageBoxSrv from '@/app/lib/message-box-srv';
-import { deleteCar } from './cars-actions';
+import { deleteCar, fetchCar } from './cars-actions';
+import { setIsShowMessageBoxCancel } from '@/app/store/useDocumentStore';
+import { Car } from '@/app/lib/definitions';
 
-export default function BtnDeleteCar({ id, name, onDelete }
-  : { id: string, name: string, onDelete: () => void }) {
+export default function BtnDeleteCar({ id, name, userId, current_sections, readonly_permission, onDelete }
+  : { id: string, name: string, userId: string, current_sections: string, readonly_permission: boolean, onDelete: () => void }) {
   const [isMessageBoxOpen, setIsMessageBoxOpen] = useState(false);
   const [messageBoxText, setMessageBoxText] = useState('');
   const idToDelete = useRef('');
@@ -20,10 +22,30 @@ export default function BtnDeleteCar({ id, name, onDelete }
 
   const deleteTaskWithId = askUserForDeleting.bind(null, id, name);
 
-  const handleOK = () => {
-    deleteCar(idToDelete.current);
-    onDelete();
-    setIsMessageBoxOpen(false);
+  const handleOK = async () => {
+    const freshRecord: Car = await fetchCar(idToDelete.current, current_sections);
+    const isDeletable =
+      !readonly_permission &&
+      (freshRecord.editing_by_user_id === null ||
+        // freshWarehouseRecord.editing_by_user_id === userId ||
+        (freshRecord.editing_since && new Date(freshRecord.editing_since) < new Date(Date.now() - 30 * 60 * 1000)));
+    if (isDeletable) {
+      try {
+        await deleteCar(idToDelete.current);
+        onDelete();
+      } catch (error) {
+        setMessageBoxText(String(error));
+        setIsMessageBoxOpen(true);
+        setIsShowMessageBoxCancel(false);
+      }
+    } else {
+      const msg = readonly_permission ? 'Недостаточно прав для удаления автомобиля!'
+        : freshRecord.editing_by_user_id === userId ? 'Вы редактируете этот документ в другом окне!'
+          : freshRecord.editing_since ? 'Документ редактируется другим пользователем!' : 'Что-то пошло не так!';
+      setMessageBoxText(msg);
+      setIsMessageBoxOpen(true);
+      setIsShowMessageBoxCancel(false);
+    }
   };
 
   const handleCancel = () => {

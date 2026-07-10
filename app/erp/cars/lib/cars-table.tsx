@@ -11,11 +11,15 @@ export default function CarsTable({
   query,
   currentPage,
   current_sections,
+  userId,
+  readonly_permission,
   showDeleteButton = false,
 }: {
   query: string;
   currentPage: number;
   current_sections: string;
+  userId: string;
+  readonly_permission: boolean;
   showDeleteButton?: boolean;
 }) {
   const [cars, setCars] = useState<Awaited<ReturnType<typeof fetchFilteredCars>> | null>(null);
@@ -44,6 +48,13 @@ export default function CarsTable({
   }
 
   return (
-    <CarsTableNaked cars={cars} showDeleteButton={showDeleteButton} loadCars={loadCars} />
+    <CarsTableNaked
+      cars={cars}
+      showDeleteButton={showDeleteButton}
+      userId={userId}
+      current_sections={current_sections}
+      readonly_permission={readonly_permission}
+      loadCars={loadCars}
+    />
   );
 }

@@ -1,3 +1,5 @@
+// Warehouses Page
+
 import { lusitana } from "@/app/ui/fonts";
 import { auth, getUser } from "@/auth";
 import { getCurrentSections, getFeshRecord, tryLockRecord, unlockRecord } from "@/app/lib/common-actions";

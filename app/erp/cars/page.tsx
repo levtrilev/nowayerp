@@ -62,6 +62,8 @@ export default async function Page(props: {
         query={query}
         currentPage={currentPage}
         current_sections={current_sections}
+        userId={pageUser.id}
+        readonly_permission={readonly_permission}
         showDeleteButton={!readonly_permission}
       />
       <div className="mt-5 flex w-full justify-center">

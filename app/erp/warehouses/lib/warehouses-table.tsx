@@ -40,7 +40,7 @@ export default function WarehousesTable({
   };
 
   useEffect(() => {
-  loadWarehouses();
+    loadWarehouses();
   }, [query, currentPage, current_sections]);
 
   if (loading) return <div>Загрузка...</div>;
@@ -83,6 +83,7 @@ export default function WarehousesTable({
                             warehouse={warehouse}
                             userId={userId}
                             readonly_permission={readonly_permission}
+                            current_sections={current_sections}
                             onDelete={loadWarehouses} />}
                         </div>
                       </td>
@@ -106,11 +107,13 @@ export default function WarehousesTable({
                       </h3>
                       <div className="flex gap-2">
                         <BtnEditWarehouseLink id={warehouse.id} />
-                          {showDeleteButton && <BtnDeleteWarehouse
-                            warehouse={warehouse}
-                            userId={userId}
-                            readonly_permission={readonly_permission}
-                            onDelete={loadWarehouses} />}                      </div>
+                        {showDeleteButton && <BtnDeleteWarehouse
+                          warehouse={warehouse}
+                          userId={userId}
+                          readonly_permission={readonly_permission}
+                          current_sections={current_sections}
+                          onDelete={loadWarehouses} />}
+                      </div>
                     </div>
                   </div>
                 ))}
