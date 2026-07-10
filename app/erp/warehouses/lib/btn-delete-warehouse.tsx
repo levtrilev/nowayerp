@@ -5,8 +5,11 @@ import { useState, useRef } from 'react';
 import MessageBoxSrv from '@/app/lib/message-box-srv';
 import { deleteWarehouse } from './warehouses-actions';
 import { setIsShowMessageBoxCancel } from '@/app/store/del_useMessageBoxStore';
+import { DocUserPermissions, Warehouse } from '@/app/lib/definitions';
+import { checkReadonly } from '@/app/lib/common-utils';
 
-export default function BtnDeleteWarehouse({ id, name, onDelete }: { id: string; name: string; onDelete: () => void }) {
+export default function BtnDeleteWarehouse({ warehouse, userId, readonly_permission, onDelete }
+  : { warehouse: Warehouse; userId: string; readonly_permission: boolean; onDelete: () => void }) {
   const [isMessageBoxOpen, setIsMessageBoxOpen] = useState(false);
   const [messageBoxText, setMessageBoxText] = useState('');
   const idToDelete = useRef('');
@@ -17,17 +20,32 @@ export default function BtnDeleteWarehouse({ id, name, onDelete }: { id: string;
     setMessageBoxText(`Склад: ${name}\nУдалить склад?`);
   };
 
-  const deleteWarehouseWithId = askUserForDeleting.bind(null, id, name);
+  const deleteWarehouseWithId = askUserForDeleting.bind(null, warehouse.id, warehouse.name);
 
   const handleOK = async () => {
-    try {
-      await deleteWarehouse(idToDelete.current);
-      onDelete();
-    } catch (error) {
-      setMessageBoxText(String(error));
+    const isDeletable =
+      !readonly_permission &&
+      (warehouse.editing_by_user_id === null ||
+        warehouse.editing_by_user_id === userId ||
+        (warehouse.editing_since && new Date(warehouse.editing_since) < new Date(Date.now() - 30 * 60 * 1000)));
+
+    if (isDeletable) {
+      try {
+        await deleteWarehouse(idToDelete.current);
+        onDelete();
+      } catch (error) {
+        setMessageBoxText(String(error));
+        setIsMessageBoxOpen(true);
+        setIsShowMessageBoxCancel(false);
+      }
+    } else {
+      const msg = readonly_permission ? 'Недостаточно прав для удаления склада!'
+        : warehouse.editing_since ? 'Документ редактирунтся другим пользователем!' : 'Что-то пошло не так!';
+      setMessageBoxText(msg);
       setIsMessageBoxOpen(true);
       setIsShowMessageBoxCancel(false);
     }
+
   };
 
   const handleCancel = () => {

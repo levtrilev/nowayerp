@@ -8,12 +8,16 @@ import { BtnEditWarehouseLink } from './warehouses-buttons';
 export default function WarehousesTable({
   query,
   currentPage,
+  userId,
+  readonly_permission,
   current_sections,
   showDeleteButton = false,
   rows_per_page = 8,
 }: {
   query: string;
   currentPage: number;
+  userId: string;
+  readonly_permission: boolean;
   current_sections: string;
   showDeleteButton?: boolean;
   rows_per_page?: number;
@@ -36,7 +40,7 @@ export default function WarehousesTable({
   };
 
   useEffect(() => {
-    loadWarehouses();
+  loadWarehouses();
   }, [query, currentPage, current_sections]);
 
   if (loading) return <div>Загрузка...</div>;
@@ -75,7 +79,11 @@ export default function WarehousesTable({
                       </td>
                       <td className="w-1/4 whitespace-nowrap py-2 pr-3">
                         <div className="flex justify-end gap-3">
-                          {showDeleteButton && <BtnDeleteWarehouse id={warehouse.id} name={warehouse.name} onDelete={loadWarehouses} />}
+                          {showDeleteButton && <BtnDeleteWarehouse
+                            warehouse={warehouse}
+                            userId={userId}
+                            readonly_permission={readonly_permission}
+                            onDelete={loadWarehouses} />}
                         </div>
                       </td>
                     </tr>
@@ -98,8 +106,11 @@ export default function WarehousesTable({
                       </h3>
                       <div className="flex gap-2">
                         <BtnEditWarehouseLink id={warehouse.id} />
-                        {showDeleteButton && <BtnDeleteWarehouse id={warehouse.id} name={warehouse.name} onDelete={loadWarehouses} />}
-                      </div>
+                          {showDeleteButton && <BtnDeleteWarehouse
+                            warehouse={warehouse}
+                            userId={userId}
+                            readonly_permission={readonly_permission}
+                            onDelete={loadWarehouses} />}                      </div>
                     </div>
                   </div>
                 ))}

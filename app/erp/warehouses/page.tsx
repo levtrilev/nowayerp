@@ -40,9 +40,9 @@ export default async function Page(props: {
   //#endregion
 
   //#region arm sections
-//   const current_sections_array = await getCurrentSectionsArray(email as string);
-//   const effective_sections_array = await getUserCurrentSections(email);     // с учётом сохранённых из АРМ
-//   const effectiveSectionIdsString = '{' + effective_sections_array.map(s => s.id).join(",") + '}';
+  //   const current_sections_array = await getCurrentSectionsArray(email as string);
+  //   const effective_sections_array = await getUserCurrentSections(email);     // с учётом сохранённых из АРМ
+  //   const effectiveSectionIdsString = '{' + effective_sections_array.map(s => s.id).join(",") + '}';
   //#endregion
 
   const searchParams = await props.searchParams;
@@ -63,11 +63,15 @@ export default async function Page(props: {
         <h1 className={`${lusitana.className} text-2xl`}>Склады</h1>
       </div>
       <div className="mt-4 flex items-center justify-between gap-2 md:mt-8">
-        <Search placeholder="Найти склад..." />
+
+        <Search placeholder="Найти склад..." initialQuery={query} />
+        {/* <Search placeholder="Найти склад..." /> */}
         <CreateWarehouse readonly={readonly_permission} />
       </div>
       <WarehousesTable
         query={query}
+        userId={pageUser.id}
+        readonly_permission={readonly_permission}
         currentPage={currentPage}
         current_sections={current_sections}
         key={1}

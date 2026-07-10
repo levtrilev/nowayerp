@@ -67,7 +67,7 @@ export default async function Page(props: {
         <h1 className={`${lusitana.className} text-2xl`}>Наряды</h1>
       </div>
       <div className="mt-4 flex items-center justify-between gap-2 md:mt-8">
-        <Search placeholder="Найти наряд..." />
+        <Search placeholder="Найти наряд..." initialQuery={query}  />
         <CreateWorkorder readonly={readonly_permission} />
       </div>
 

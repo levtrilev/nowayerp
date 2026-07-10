@@ -66,7 +66,7 @@ export default async function Page(props: {
         <h1 className={`${lusitana.className} text-2xl`}>Счета-заказы</h1>
       </div>
       <div className="mt-4 flex items-center justify-between gap-2 md:mt-8">
-        <Search placeholder="Найти счет-заказ..." />
+        <Search placeholder="Найти счет-заказ..." initialQuery={query}  />
         <CreateVatInvoice readonly={readonly_permission} />
       </div>
       <VatInvoicesTable

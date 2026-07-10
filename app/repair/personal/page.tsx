@@ -83,7 +83,7 @@ export default async function Page(props: {
             <h1 className={`${lusitana.className} text-2xl`}>Персонал</h1>
           </div>
           {/* <div className="mt-4 flex items-center justify-between gap-2 md:mt-8">
-            <Search placeholder="Найти сотрудника..." />
+            <Search placeholder="Найти сотрудника..." initialQuery={query}  />
             <CreatePerson readonly={readonly_permission} />
           </div> */}
 

@@ -67,7 +67,7 @@ export default async function Page(props: {
         <h1 className={`${lusitana.className} text-2xl`}>Юридические лица</h1>
       </div>
       <div className="mt-4 flex items-center justify-between gap-2 md:mt-8">
-        <Search placeholder="Найти юрлицо..." />
+        <Search placeholder="Найти юрлицо..." initialQuery={query}  />
         <CreateLegalEntity readonly={readonly_permission} />
       </div>
       <LegalEntitiesTable
