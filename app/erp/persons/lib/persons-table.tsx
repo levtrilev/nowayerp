@@ -14,16 +14,18 @@ export default async function PersonsTable({
   query,
   currentPage,
   current_sections,
-  showDeleteButton = false,
   columns = 5,
   rows_per_page = 8,
+  user_id,
+  readonly_permission,
 }: {
   query: string;
   currentPage: number;
   current_sections: string;
-  showDeleteButton?: boolean;
   columns?: number;
   rows_per_page?: number;
+  user_id: string;
+  readonly_permission: boolean;
 }) {
   const persons = await fetchFilteredPersons(query, currentPage, current_sections, rows_per_page);
 
@@ -68,7 +70,14 @@ export default async function PersonsTable({
                       </td>}
                       {columns >= 5 && <td className="w-1/12 whitespace-nowrap py-2 pr-3">
                         <div className="flex justify-end gap-3">
-                          {showDeleteButton && <BtnDeletePerson id={person.id} name={person.name} />}
+                          {!readonly_permission &&
+                            <BtnDeletePerson
+                              id={person.id}
+                              name={person.name}
+                              user_id={user_id}
+                              readonly_permission={readonly_permission}
+                              current_sections={current_sections}
+                            />}
                         </div>
                       </td>}
                     </tr>
@@ -91,7 +100,14 @@ export default async function PersonsTable({
                       </h3>
                       <div className="flex gap-2">
                         <BtnEditPersonLink id={person.id} />
-                        {showDeleteButton && <BtnDeletePerson id={person.id} name={person.name} />}
+                        {!readonly_permission &&
+                          <BtnDeletePerson
+                            id={person.id}
+                            name={person.name}
+                            user_id={user_id}
+                            readonly_permission={readonly_permission}
+                            current_sections={current_sections}
+                          />}
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-2">

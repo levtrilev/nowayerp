@@ -16,12 +16,17 @@ export function CreateVatInvoice({ readonly }: { readonly: boolean }) {
   );
 }
 
-export function BtnEditVatInvoiceLink({ id }: { id: string }) {
+export function BtnEditVatInvoiceLink({ id, query, currentPage }: { id: string, query?: string, currentPage?: number }) {
   const LinkIcon = PencilIcon;
+  const urlParams = new URLSearchParams();
+  if (query) urlParams.set('query', query);
+  if (currentPage) urlParams.set('page', currentPage.toString());
+  const queryString = urlParams.toString();
+  const href = `/erp/vat-invoices/${id}/edit` + (queryString ? '?' + queryString : '');
   return (
     <Link
       key={"Edit"}
-      href={"/erp/vat-invoices/" + id + "/edit"}
+      href={href}
       className='flex h-10 items-center justify-center space-x-2 rounded-md border border-gray-200
       bg-white p-2 text-sm font-medium hover:bg-gray-100 md:flex-none md:justify-start md:p-2 md:px-3'
     >

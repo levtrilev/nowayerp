@@ -3,18 +3,20 @@
 
 import MessageBoxSrv from '@/app/lib/message-box-srv';
 import { fetchFilteredRegions } from './region-actions';
-import { BtnDeleteRegion, BtnEditRegionLink } from './region-buttons';
+import BtnDeleteRegion from './btn-delete-region';
 
 export default async function RegionsTable({
   query,
   currentPage,
   current_sections,
-  showDeleteButton = false,
+  readonly_permission,
+  user_id
 }: {
   query: string;
   currentPage: number;
   current_sections: string;
-  showDeleteButton?: boolean;
+  readonly_permission: boolean; 
+  user_id: string;
 }) {
 
   const regions = await fetchFilteredRegions(query, currentPage, current_sections);
@@ -78,7 +80,13 @@ export default async function RegionsTable({
                       </td>
                       <td className="w-1/16 whitespace-nowrap pl-4 py-1 pr-3">
                         <div className="flex justify-end gap-3">
-                          {showDeleteButton && <BtnDeleteRegion region={region} />}
+                          {!readonly_permission &&
+                            <BtnDeleteRegion
+                              region={region}
+                              user_id={user_id}
+                              readonly_permission={readonly_permission}
+                              current_sections={current_sections}
+                            />}
                         </div>
                       </td>
                     </tr>
@@ -100,8 +108,13 @@ export default async function RegionsTable({
                         </a>
                       </h3>
                       <div className="flex gap-2">
-                        {showDeleteButton && <BtnDeleteRegion region={region} />}
-                      </div>
+                        {!readonly_permission &&
+                          <BtnDeleteRegion
+                            region={region}
+                            user_id={user_id}
+                            readonly_permission={readonly_permission}
+                            current_sections={current_sections}
+                          />}                      </div>
                     </div>
                     <div className="grid grid-cols-2 gap-2">
                       <div className="col-span-1">

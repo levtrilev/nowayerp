@@ -9,11 +9,15 @@ export default function LegalEntitiesTable({
   query,
   currentPage,
   current_sections,
+  userId, 
+  readonly_permission,
   showDeleteButton = false,
 }: {
   query: string;
   currentPage: number;
   current_sections: string;
+  userId: string;
+  readonly_permission: boolean;
   showDeleteButton?: boolean;
 }) {
   const [legalEntities, setLegalEntities] = useState<LegalEntityForm[]>([]);
@@ -80,7 +84,13 @@ export default function LegalEntitiesTable({
                       </td>
                       <td className="w-2/12 whitespace-nowrap py-2 pr-3">
                         <div className="flex justify-end gap-3">
-                          {showDeleteButton && <BtnDeleteLegalEntity id={le.id} name={le.name} onDelete={loadLegalEntities} />}
+                          {showDeleteButton && <BtnDeleteLegalEntity 
+                          id={le.id} 
+                          name={le.name}
+                          readonly_permission={readonly_permission}
+                          userId={userId}
+                          current_sections={current_sections} 
+                          onDelete={loadLegalEntities} />}
                         </div>
                       </td>
                     </tr>
@@ -103,8 +113,13 @@ export default function LegalEntitiesTable({
                       </h3>
                       <div className="flex gap-2">
                         <BtnEditLegalEntityLink id={le.id} />
-                        {showDeleteButton && <BtnDeleteLegalEntity id={le.id} name={le.name} onDelete={loadLegalEntities} />}
-                      </div>
+                          {showDeleteButton && <BtnDeleteLegalEntity 
+                          id={le.id} 
+                          name={le.name}
+                          readonly_permission={readonly_permission}
+                          userId={userId}
+                          current_sections={current_sections} 
+                          onDelete={loadLegalEntities} />}                      </div>
                     </div>
                     <p className="text-sm text-gray-600">ИНН: {le.inn}</p>
                   </div>

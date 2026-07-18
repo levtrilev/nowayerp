@@ -1,5 +1,5 @@
 // locations-table.tsx
-
+// 'use client';
 import { lusitana } from '@/app/ui/fonts';
 import Search from '@/app/ui/search';
 
@@ -12,12 +12,14 @@ export default async function LocationsTable({
   query,
   currentPage,
   current_sections,
-  showDeleteButton = false,
+  userId,
+  readonly_permission,
 }: {
   query: string;
   currentPage: number;
   current_sections: string;
-  showDeleteButton?: boolean;
+  userId: string;
+  readonly_permission: boolean;
 }) {
   const locations = await fetchFilteredLocations(query, currentPage, current_sections);
 
@@ -51,7 +53,13 @@ export default async function LocationsTable({
 
                       <td className="w-1/12 whitespace-nowrap py-2 pr-3">
                         <div className="flex justify-end gap-3">
-                          {showDeleteButton && <BtnDeleteLocation id={location.id} name={location.name} />}
+                          {!readonly_permission && <BtnDeleteLocation
+                            id={location.id}
+                            name={location.name}
+                            userId={userId}
+                            readonly_permission={readonly_permission}
+                            current_sections={current_sections}
+                          />}
                         </div>
                       </td>
                     </tr>
@@ -74,11 +82,16 @@ export default async function LocationsTable({
                       </h3>
                       <div className="flex gap-2">
                         <BtnEditLocationLink id={location.id} />
-                        {showDeleteButton && <BtnDeleteLocation id={location.id} name={location.name} />}
+                        {!readonly_permission && <BtnDeleteLocation 
+                        id={location.id} 
+                        name={location.name} 
+                        userId={userId} 
+                        readonly_permission={readonly_permission}
+                        current_sections={current_sections} 
+                        />}
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-2">
-                      {/* Дополнительные поля при необходимости */}
                     </div>
                   </div>
                 ))}

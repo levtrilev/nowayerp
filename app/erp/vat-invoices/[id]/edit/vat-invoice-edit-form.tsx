@@ -221,6 +221,7 @@ export default function VatInvoiceEditForm(props: IEditFormProps) {
         try {
             if (formData.id === "") {
                 await createVatInvoice(formData);
+                // Force refresh to ensure list updates immediately
                 setTimeout(() => {
                     router.push('/erp/vat-invoices');
                 }, 2000);
@@ -230,6 +231,10 @@ export default function VatInvoiceEditForm(props: IEditFormProps) {
                     deleteMarkedGoodsFromDB(),
                     saveNewGoodsToDB(formData.id, formData.section_id),
                 ]);
+                // Force refresh to ensure list updates immediately  
+                // setTimeout(() => {
+                //     router.push('/erp/vat-invoices');
+                // }, 2000);
             }
             setIsDocumentChanged(false);
             setMessageBoxText('Документ сохранен.');
@@ -247,7 +252,11 @@ export default function VatInvoiceEditForm(props: IEditFormProps) {
             setIsShowMessageBoxCancel(true);
             setIsMessageBoxOpen(true);
         } else if (!isDocumentChanged) {
-            window.history.back();
+            // Preserve search params (page, query) when navigating back
+            const urlParams = new URLSearchParams(window.location.search);
+            const queryParams = urlParams.toString();
+            const queryString = queryParams ? '?' + queryParams : '';
+            router.push(`/erp/vat-invoices${queryString}`);
         }
     };
     const handleShowPDF = async () => {

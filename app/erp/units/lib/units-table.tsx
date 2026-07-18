@@ -9,12 +9,14 @@ export default async function UnitsTable({
   query,
   currentPage,
   current_sections,
-  showDeleteButton = false,
+  readonly_permission,
+  user_id,
 }: {
   query: string;
   currentPage: number;
   current_sections: string;
-  showDeleteButton?: boolean;
+  readonly_permission: boolean;
+  user_id: string;
 }) {
   const units = await fetchFilteredUnits(query, currentPage, current_sections);
 
@@ -39,7 +41,7 @@ export default async function UnitsTable({
                     <tr key={unit.id} className="group">
                       <td className="w-4/12 overflow-hidden whitespace-nowrap bg-white py-2 pl-6 pr-3 text-sm text-black">
                         <a
-                          href={`/repair/units/${unit.id}/edit`}
+                          href={`/erp/units/${unit.id}/edit`}
                           className="text-blue-800 underline"
                         >
                           {unit.name}
@@ -50,7 +52,14 @@ export default async function UnitsTable({
                       </td>
                       <td className="w-1/12 whitespace-nowrap py-2 pr-3">
                         <div className="flex justify-end gap-3">
-                          {showDeleteButton && <BtnDeleteUnit id={unit.id} name={unit.name} />}
+                          {!readonly_permission &&
+                            <BtnDeleteUnit
+                              id={unit.id}
+                              name={unit.name}
+                              user_id={user_id}
+                              readonly_permission={readonly_permission}
+                              current_sections={current_sections}
+                            />}
                         </div>
                       </td>
                     </tr>
@@ -73,8 +82,14 @@ export default async function UnitsTable({
                       </h3>
                       <div className="flex gap-2">
                         <BtnEditUnitLink id={unit.id} />
-                        {showDeleteButton && <BtnDeleteUnit id={unit.id} name={unit.name} />}
-                      </div>
+                          {!readonly_permission &&
+                            <BtnDeleteUnit
+                              id={unit.id}
+                              name={unit.name}
+                              user_id={user_id}
+                              readonly_permission={readonly_permission}
+                              current_sections={current_sections}
+                            />}                      </div>
                     </div>
                   </div>
                 ))}

@@ -8,12 +8,16 @@ import { BtnEditGoodLink } from './goods-buttons';
 export default function GoodsTable({
   query,
   currentPage,
+  userId,
+  readonly_permission,
   current_sections,
   showDeleteButton = false,
   rows_per_page = 8,
 }: {
   query: string;
   currentPage: number;
+  userId: string;
+  readonly_permission: boolean;
   current_sections: string;
   showDeleteButton?: boolean;
   rows_per_page?: number;
@@ -86,7 +90,13 @@ export default function GoodsTable({
                       </td>
                       <td className="w-2/12 whitespace-nowrap py-2 pr-3">
                         <div className="flex justify-end gap-3">
-                          {showDeleteButton && <BtnDeleteGood id={good.id} name={good.name} onDelete={loadGoods} />}
+                          {showDeleteButton && <BtnDeleteGood 
+                          id={good.id} 
+                          name={good.name}
+                          userId={userId}
+                          readonly_permission={readonly_permission}
+                          current_sections={current_sections} 
+                          onDelete={loadGoods} />}
                         </div>
                       </td>
                     </tr>
@@ -109,8 +119,13 @@ export default function GoodsTable({
                       </h3>
                       <div className="flex gap-2">
                         <BtnEditGoodLink id={good.id} />
-                        {showDeleteButton && <BtnDeleteGood id={good.id} name={good.name} onDelete={loadGoods} />}
-                      </div>
+                          {showDeleteButton && <BtnDeleteGood 
+                          id={good.id} 
+                          name={good.name}
+                          userId={userId}
+                          readonly_permission={readonly_permission}
+                          current_sections={current_sections} 
+                          onDelete={loadGoods} />}                      </div>
                     </div>
                     <p className="text-sm text-gray-600">Бренд: {good.brand}</p>
                     <p className="text-sm text-gray-600">Артикул: {good.product_code}</p>

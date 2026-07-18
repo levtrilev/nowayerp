@@ -116,7 +116,7 @@ export default function ObjectEditForm(props: IEditFormProps) {
         await createObject(formData);
         // setMessageBoxText('Документ сохранен.');
         setTimeout(() => {
-          router.push('/repair/objects');
+          router.push('/erp/objects');
         }, 2000);
       } else {
         await updateObject(formData);

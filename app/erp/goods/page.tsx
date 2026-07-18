@@ -79,6 +79,8 @@ export default async function Page(props: {
         query={query}
         currentPage={currentPage}
         current_sections={current_sections}
+        userId={user.id}
+        readonly_permission={readonly_permission}
         key={1}
         showDeleteButton={!readonly_permission}
       />

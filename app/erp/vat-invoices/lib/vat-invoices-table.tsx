@@ -8,12 +8,14 @@ export default async function VatInvoicesTable({
   query,
   currentPage,
   current_sections,
-  showDeleteButton = false,
+  user_id,
+  readonly_permission,
 }: {
   query: string;
   currentPage: number;
   current_sections: string;
-  showDeleteButton?: boolean;
+  user_id: string;
+  readonly_permission: boolean;
 }) {
   const vatInvoices = await fetchFilteredVatInvoices(query, currentPage, current_sections);
 
@@ -40,7 +42,7 @@ export default async function VatInvoicesTable({
                     <tr key={invoice.id} className="group">
                       <td className="w-4/12 overflow-hidden whitespace-nowrap bg-white py-2 pl-6 pr-3 text-sm text-black">
                         <a
-                          href={`/erp/vat-invoices/${invoice.id}/edit`}
+                          href={`/erp/vat-invoices/${invoice.id}/edit?query=${encodeURIComponent(query)}&page=${currentPage}`}
                           className="text-blue-800 underline"
                         >
                           {invoice.name}
@@ -60,7 +62,14 @@ export default async function VatInvoicesTable({
                       </td>
                       <td className="w-1/12 whitespace-nowrap py-2 pr-3">
                         <div className="flex justify-end gap-3">
-                          {showDeleteButton && <BtnDeleteVatInvoice id={invoice.id} name={invoice.name} />}
+                          {!readonly_permission &&
+                            <BtnDeleteVatInvoice
+                              id={invoice.id}
+                              name={invoice.name}
+                              current_sections={current_sections}
+                              user_id={user_id}
+                              readonly_permission={readonly_permission}
+                            />}
                         </div>
                       </td>
                     </tr>
@@ -77,13 +86,20 @@ export default async function VatInvoicesTable({
                   >
                     <div className="flex justify-between items-center mb-2">
                       <h3 className="text-lg font-medium text-blue-800 underline">
-                        <a href={`/erp/vat-invoices/${invoice.id}/edit`}>
+                        <a href={`/erp/vat-invoices/${invoice.id}/edit?query=${encodeURIComponent(query)}&page=${currentPage}`}>
                           {invoice.name}
                         </a>
                       </h3>
                       <div className="flex gap-2">
-                        <BtnEditVatInvoiceLink id={invoice.id} />
-                        {showDeleteButton && <BtnDeleteVatInvoice id={invoice.id} name={invoice.name} />}
+                        <BtnEditVatInvoiceLink id={invoice.id} query={query} currentPage={currentPage} />
+                        {!readonly_permission &&
+                          <BtnDeleteVatInvoice
+                            id={invoice.id}
+                            name={invoice.name}
+                            current_sections={current_sections}
+                            user_id={user_id}
+                            readonly_permission={readonly_permission}
+                          />}
                       </div>
                     </div>
                   </div>

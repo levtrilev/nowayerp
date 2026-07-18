@@ -120,10 +120,10 @@ export async function fetchObject(id: string, current_sections: string) {
         id,
         name,
         username,
+        section_id,
         editing_by_user_id,
         editing_since,
-        timestamptz,
-        date_created
+        timestamptz
       FROM your_objects objects
       WHERE id = $2
     `,

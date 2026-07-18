@@ -147,7 +147,7 @@ export default function LegalEntityEditForm(props: IEditFormProps) {
             if (formData.id === "") {
                 await createLegalEntity(formData);
                 setTimeout(() => {
-                    router.push('erp/legal-entities');
+                    router.push('/erp/legal-entities');
                 }, 2000);
             } else {
                 await updateLegalEntity(formData);

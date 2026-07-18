@@ -53,12 +53,16 @@ export async function createVatInvoice(invoice: VATInvoice) {
         vat_rate,
         vat_amount,
         doc_status,
+        approved_date,
+        approved_by_person_id,
+        accepted_date,
+        accepted_by_person_id,
         username,
         section_id,
         timestamptz,
         tenant_id,
         author_id
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)
+) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22)
       `,
       [
         name,
@@ -74,17 +78,18 @@ export async function createVatInvoice(invoice: VATInvoice) {
         vat_rate,
         vat_amount,
         doc_status,
+        approved_date ? new Date(approved_date as string) : null,
+        approved_by_person_id,
+        accepted_date ? new Date(accepted_date as string) : null,
+        accepted_by_person_id,
         username,
         section_id,
         date_created,
         tenant_id,
         author_id,
-      ]
+      ],
     );
-    // approved_date,
-    // approved_by_person_id,
-    // accepted_date,
-    // accepted_by_person_id,
+
   } catch (error) {
     console.error("Не удалось создать VATInvoice:", error);
     throw new Error("Не удалось создать VATInvoice:" + String(error));
@@ -164,22 +169,23 @@ export async function updateVatInvoice(invoice: VATInvoice) {
         vat_rate,
         vat_amount,
         doc_status,
-        new Date(approved_date as string),
+        approved_date ? new Date(approved_date as string) : null,
         approved_by_person_id,
-        new Date(accepted_date as string),
+        accepted_date ? new Date(accepted_date as string) : null,
         accepted_by_person_id,
         username,
         section_id,
         tenant_id,
         author_id,
-      ]
+      ],
     );
   } catch (error) {
     console.error("Не удалось обновить VATInvoice:", error);
     throw new Error(
-      "Ошибка базы данных: Не удалось обновить VATInvoice: " + String(error)
+      "Ошибка базы данных: Не удалось обновить VATInvoice: " + String(error),
     );
   }
+  revalidatePath("/erp/vat-invoices");
 }
 
 export async function deleteVatInvoice(id: string) {
@@ -188,7 +194,7 @@ export async function deleteVatInvoice(id: string) {
   } catch (error) {
     console.error("Ошибка удаления VATInvoice:", error);
     throw new Error(
-      "Ошибка базы данных: Не удалось удалить VATInvoice: " + String(error)
+      "Ошибка базы данных: Не удалось удалить VATInvoice: " + String(error),
     );
   }
   revalidatePath("/erp/vat-invoices");
@@ -203,7 +209,7 @@ export async function fetchVatInvoice(id: string, current_sections: string) {
       WITH your_vat_invoices AS ( SELECT * FROM "vat_invoices" WHERE section_id = ANY ($1::uuid[]))
       SELECT * FROM your_vat_invoices WHERE id = $2
       `,
-      [current_sections, id]
+      [current_sections, id],
     );
     return data.rows[0];
   } catch (err) {
@@ -214,7 +220,7 @@ export async function fetchVatInvoice(id: string, current_sections: string) {
 
 export async function fetchVatInvoiceForm(
   id: string,
-  current_sections: string
+  current_sections: string,
 ) {
   try {
     const data = await pool.query<VATInvoiceForm>(
@@ -267,7 +273,7 @@ export async function fetchVatInvoiceForm(
       LEFT JOIN sections ON v.section_id = sections.id
       WHERE v.id = $2
       `,
-      [current_sections, id]
+      [current_sections, id],
     );
     return data.rows[0];
   } catch (err) {
@@ -283,7 +289,7 @@ export async function fetchVatInvoices(current_sections: string) {
       WITH your_vat_invoices AS ( SELECT * FROM "vat_invoices" WHERE section_id = ANY ($1::uuid[]))
       SELECT * FROM your_vat_invoices ORDER BY name ASC
       `,
-      [current_sections]
+      [current_sections],
     );
     return data.rows;
   } catch (err) {
@@ -343,7 +349,7 @@ export async function fetchVatInvoicesForm(current_sections: string) {
       LEFT JOIN sections ON v.section_id = sections.id
       ORDER BY v.name ASC
       `,
-      [current_sections]
+      [current_sections],
     );
     return data.rows;
   } catch (err) {
@@ -357,7 +363,7 @@ export async function fetchVatInvoicesForm(current_sections: string) {
 export async function fetchFilteredVatInvoices(
   query: string,
   currentPage: number,
-  current_sections: string
+  current_sections: string,
 ) {
   const offset = (currentPage - 1) * ITEMS_PER_PAGE;
   try {
@@ -412,20 +418,20 @@ export async function fetchFilteredVatInvoices(
       ORDER BY v.name ASC
       LIMIT $3 OFFSET $4
       `,
-      [current_sections, `%${query}%`, ITEMS_PER_PAGE, offset]
+      [current_sections, `%${query}%`, ITEMS_PER_PAGE, offset],
     );
     return invoices.rows;
   } catch (error) {
     console.error("Ошибка фильтрации VATInvoices:", error);
     throw new Error(
-      "Не удалось загрузить отфильтрованные VATInvoices:" + String(error)
+      "Не удалось загрузить отфильтрованные VATInvoices:" + String(error),
     );
   }
 }
 
 export async function fetchVatInvoicesPages(
   query: string,
-  current_sections: string
+  current_sections: string,
 ) {
   try {
     const count = await pool.query(
@@ -433,14 +439,14 @@ export async function fetchVatInvoicesPages(
       WITH your_vat_invoices AS ( SELECT * FROM "vat_invoices" WHERE section_id = ANY ($1::uuid[]))
       SELECT COUNT(*) FROM your_vat_invoices WHERE name ILIKE $2
       `,
-      [current_sections, `%${query}%`]
+      [current_sections, `%${query}%`],
     );
     const totalPages = Math.ceil(Number(count.rows[0].count) / ITEMS_PER_PAGE);
     return totalPages;
   } catch (error) {
     console.error("Ошибка подсчёта страниц VATInvoices:", error);
     throw new Error(
-      "Не удалось определить количество страниц: " + String(error)
+      "Не удалось определить количество страниц: " + String(error),
     );
   }
 }

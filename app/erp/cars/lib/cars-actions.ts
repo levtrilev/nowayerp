@@ -270,6 +270,8 @@ export async function fetchCarsForm(
   current_sections: string,
   legalEntityId?: string,
 ) {
+  if (!legalEntityId) return [];
+
   const customerId = legalEntityId ?? null;
   try {
     const data = await pool.query<CarForm>(
@@ -308,7 +310,7 @@ export async function fetchCarsForm(
       [current_sections, customerId],
     );
 
-    return data.rows;
+    return customerId ? data.rows : [];
   } catch (err) {
     console.error("Ошибка получения форм cars:", err);
     throw new Error("Не удалось загрузить формы cars:" + String(err));

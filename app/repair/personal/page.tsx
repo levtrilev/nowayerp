@@ -93,6 +93,8 @@ export default async function Page(props: {
             current_sections={current_sections}
             columns={3}
             rows_per_page={16}
+            user_id={user.id}
+            readonly_permission={readonly_permission}
           />
           <div className="mt-5 flex w-full justify-center">
             <Pagination totalPages={totalPages_persons} />

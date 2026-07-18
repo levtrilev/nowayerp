@@ -17,12 +17,7 @@ export async function createLocation(location: Location) {
   const session = await auth();
   const username = session?.user?.name;
   const date_created = new Date().toISOString();
-  const {
-    name,
-    section_id,
-    tenant_id,
-    author_id,
-  } = location;
+  const { name, section_id, tenant_id, author_id } = location;
   try {
     await pool.query(
       `
@@ -32,14 +27,7 @@ export async function createLocation(location: Location) {
         tenant_id, author_id
       ) VALUES ($1, $2, $3, $4, $5, $6)
     `,
-      [
-        name,
-        username,
-        section_id,
-        date_created,
-        tenant_id,
-        author_id,
-      ]
+      [name, username, section_id, date_created, tenant_id, author_id],
     );
   } catch (error) {
     console.error("Не удалось создать Location:", error);
@@ -58,13 +46,7 @@ export async function updateLocation(location: Location) {
   const session = await auth();
   const username = session?.user?.name;
 
-  const {
-    id,
-    name,
-    section_id,
-    tenant_id,
-    author_id,
-  } = location;
+  const { id, name, section_id, tenant_id, author_id } = location;
 
   try {
     await pool.query(
@@ -78,18 +60,13 @@ export async function updateLocation(location: Location) {
         timestamptz = now()
       WHERE id = $3
     `,
-      [
-        name,
-        username,
-        id,
-        section_id,
-        tenant_id,
-        author_id,
-      ]
+      [name, username, id, section_id, tenant_id, author_id],
     );
   } catch (error) {
     console.error("Не удалось обновить Location:", error);
-    throw new Error("Ошибка базы данных: Не удалось обновить Location: " + error);
+    throw new Error(
+      "Ошибка базы данных: Не удалось обновить Location: " + error,
+    );
   }
 
   revalidatePath("/erp/locations");
@@ -109,8 +86,7 @@ export async function deleteLocation(id: string) {
 
 //#region Fetch Locations
 
-export async function fetchLocation(id: string, 
-  current_sections: string) {
+export async function fetchLocation(id: string, current_sections: string) {
   try {
     const data = await pool.query<Location>(
       `
@@ -121,14 +97,14 @@ export async function fetchLocation(id: string,
         id,
         name,
         username,
+        section_id,
         editing_by_user_id,
         editing_since,
-        timestamptz,
-        date_created
+        timestamptz
       FROM your_locations
       WHERE id = $2
     `,
-      [current_sections, id]
+      [current_sections, id],
     );
 
     return data.rows[0];
@@ -138,8 +114,7 @@ export async function fetchLocation(id: string,
   }
 }
 
-export async function fetchLocationForm(id: string, 
-  current_sections: string) {
+export async function fetchLocationForm(id: string, current_sections: string) {
   try {
     const data = await pool.query<LocationForm>(
       `
@@ -159,7 +134,7 @@ export async function fetchLocationForm(id: string,
       LEFT JOIN sections ON locations.section_id = sections.id
       WHERE locations.id = $2
     `,
-      [current_sections, id]
+      [current_sections, id],
     );
 
     return data.rows[0];
@@ -186,7 +161,7 @@ export async function fetchLocations(current_sections: string) {
       FROM your_locations
       ORDER BY name ASC
     `,
-      [current_sections]
+      [current_sections],
     );
 
     return data.rows;
@@ -211,7 +186,7 @@ export async function fetchLocationsForm(current_sections: string) {
       FROM your_locations locations
       ORDER BY locations.name ASC
     `,
-      [current_sections]
+      [current_sections],
     );
 
     return data.rows;
@@ -225,8 +200,11 @@ export async function fetchLocationsForm(current_sections: string) {
 
 //#region Filtered Locations
 
-export async function fetchFilteredLocations(query: string, currentPage: number, 
-  current_sections: string) {
+export async function fetchFilteredLocations(
+  query: string,
+  currentPage: number,
+  current_sections: string,
+) {
   const offset = (currentPage - 1) * ITEMS_PER_PAGE;
 
   try {
@@ -246,7 +224,7 @@ export async function fetchFilteredLocations(query: string, currentPage: number,
       ORDER BY locations.name ASC
       LIMIT $3 OFFSET $4
     `,
-      [current_sections, `%${query}%`, ITEMS_PER_PAGE, offset]
+      [current_sections, `%${query}%`, ITEMS_PER_PAGE, offset],
     );
 
     return locations.rows;
@@ -256,8 +234,10 @@ export async function fetchFilteredLocations(query: string, currentPage: number,
   }
 }
 
-export async function fetchLocationsPages(query: string, 
-  current_sections: string) {
+export async function fetchLocationsPages(
+  query: string,
+  current_sections: string,
+) {
   try {
     const count = await pool.query(
       `
@@ -267,7 +247,7 @@ export async function fetchLocationsPages(query: string,
         SELECT COUNT(*) FROM your_locations locations
       WHERE locations.name ILIKE $2
     `,
-      [current_sections, `%${query}%`]
+      [current_sections, `%${query}%`],
     );
 
     const totalPages = Math.ceil(Number(count.rows[0].count) / ITEMS_PER_PAGE);

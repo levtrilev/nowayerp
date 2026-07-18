@@ -94,7 +94,7 @@ export default function UnitEditForm(props: IEditFormProps) {
     try {
       if (!formData.id) {
         await createUnit(formData);
-        setTimeout(() => router.push('/repair/units'), 2000);
+        setTimeout(() => router.push('/erp/units'), 2000);
       } else {
         await updateUnit(formData);
       }

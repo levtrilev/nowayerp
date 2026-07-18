@@ -110,7 +110,7 @@ export async function fetchPerson(id: string, current_sections: string) {
         editing_by_user_id,
         editing_since,
         timestamptz,
-        date_created
+        section_id
       FROM your_persons persons
       WHERE id = $2
     `,

@@ -126,7 +126,7 @@ export async function fetchUnit(id: string, current_sections: string) {
         editing_by_user_id,
         editing_since,
         timestamptz,
-        date_created
+        section_id
       FROM your_units units
       WHERE id = $2
     `,
