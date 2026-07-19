@@ -7,7 +7,6 @@ import { auth, getUser } from "@/auth";
 import { getCurrentSections } from "@/app/lib/common-actions";
 import { fetchDocUserPermissions } from "@/app/admin/permissions/lib/permissios-actions";
 import { checkReadonly } from "@/app/lib/common-utils";
-import { Unit } from "@/app/lib/definitions";
 import { fetchUnitsPages } from "./lib/units-actions";
 import { CreateUnit } from "./lib/units-buttons";
 import UnitsTable from "./lib/units-table";

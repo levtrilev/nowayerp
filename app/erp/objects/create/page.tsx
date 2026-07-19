@@ -55,10 +55,10 @@ export default async function Page() {
     <main>
       <Breadcrumbs
         breadcrumbs={[
-          { label: 'Объекты', href: '/repair/objects' },
+          { label: 'Объекты', href: '/erp/objects' },
           {
             label: 'Создать новый',
-            href: '/repair/objects/create',
+            href: '/erp/objects/create',
             active: true,
           },
         ]}

@@ -46,8 +46,8 @@ export async function createObject(object: Object) {
     throw new Error("Не удалось создать Object:" + String(error));
   }
 
-  revalidatePath("/repair/objects");
-  // redirect("/repair/objects");
+   revalidatePath("/erp/objects");
+   // redirect("/erp/objects");
 }
 
 //#endregion
@@ -92,7 +92,7 @@ export async function updateObject(object: Object) {
     throw new Error("Ошибка базы данных: Не удалось обновить Object: " + String(error));
   }
 
-  revalidatePath("/repair/objects");
+   revalidatePath("/erp/objects");
 }
 
 export async function deleteObject(id: string) {
@@ -102,7 +102,7 @@ export async function deleteObject(id: string) {
     console.error("Ошибка удаления Object:", error);
     throw new Error("Ошибка базы данных: Не удалось удалить Object: " + String(error));
   }
-  revalidatePath("/repair/objects");
+   revalidatePath("/erp/objects");
 }
 
 //#endregion

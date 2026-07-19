@@ -1,6 +1,5 @@
 import React from 'react';
 import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
-// import { objectForm } from '@/app/lib/definitions';
 
 import { Font } from '@react-pdf/renderer';
 Font.register({
@@ -8,9 +7,9 @@ Font.register({
   src: 'https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-light-webfont.ttf',
 })
 
-import { FormData } from "./object-edit-form";
-import { ObjectForm } from '@/app/lib/definitions';
-// Создаем стили для PDF
+import { FormData } from "./region-edit-form";
+import { RegionForm } from '@/app/lib/definitions';
+
 const styles = StyleSheet.create({
   page: {
     flexDirection: 'column',
@@ -23,16 +22,10 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   text: {
-    fontFamily: 'Arial', // Используем стандартный шрифт
+    fontFamily: 'Arial',
     fontSize: 12,
   },
 });
-const formData: ObjectForm = {
-  id: "",
-  name: "",
-  username: "",
-
-} as ObjectForm;
 
 export default function PdfDocument({ formData }: { formData: FormData }) {
   return (
@@ -40,6 +33,10 @@ export default function PdfDocument({ formData }: { formData: FormData }) {
       <Page size="A4" style={styles.page}>
         <View style={styles.section}>
           <Text style={styles.text}>Название: {formData.name}</Text>
+          <Text style={styles.text}>Столица: {formData.capital}</Text>
+          <Text style={styles.text}>Площадь: {formData.area}</Text>
+          <Text style={styles.text}>Код: {formData.code}</Text>
+          <Text style={styles.text}>Раздел: {formData.section_name}</Text>
         </View>
       </Page>
     </Document>

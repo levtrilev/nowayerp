@@ -1,11 +1,10 @@
-
 // import Modal from "@/app/lib/modal";
-import { useState, useEffect } from "react";
-import { PencilIcon, EyeIcon, BookOpenIcon, BriefcaseIcon, BookmarkIcon } from "@heroicons/react/24/outline";
+import { useState } from "react";
+import { BookOpenIcon } from "@heroicons/react/24/outline";
 import { Region } from "@/app/lib/definitions";
+import dynamic from 'next/dynamic';
 import RegionsRefTable from "./regions-ref-table";
 
-import dynamic from 'next/dynamic';
 const Modal = dynamic(() => import('@/app/lib/common-modal'), { ssr: false });
 
 interface IBtnRegionsRefProps {
@@ -24,8 +23,8 @@ export default function BtnRegionsRef(props: IBtnRegionsRefProps) {
     // redirect("/dashboard/admin/tenants/1");
   };
   const closeModal = () => {
-    // setTenant((prev) => ({
-    //   ...props.tenant,
+    // setRegion((prev) => ({
+    //   ...props.region,
     // }));
     setModal(false);
   };
@@ -59,7 +58,7 @@ export default function BtnRegionsRef(props: IBtnRegionsRefProps) {
             Save
           </button>
           <button
-            onClick={()=>{closeModal(); setTerm("");}}
+            onClick={() => { closeModal(); setTerm(""); }}
             className="bg-blue-400 text-white w-full rounded-md border p-2 hover:bg-blue-100 hover:text-gray-500"
           >
             Exit

@@ -5,7 +5,6 @@ import PremiseEditForm from "../[id]/edit/premise-edit-form";
 import { PremiseForm, User } from "@/app/lib/definitions";
 import { lusitana } from "@/app/ui/fonts";
 import { fetchSectionsForm } from "@/app/admin/sections/lib/sections-actions";
-import { fetchRegionsForm } from "@/app/erp/regions/lib/region-actions";
 import { auth, getUser } from "@/auth";
 import { getCurrentSections } from "@/app/lib/common-actions";
 import Breadcrumbs from '@/app/ui/invoices/breadcrumbs';
@@ -14,6 +13,7 @@ import { checkReadonly, formatDateForInput } from "@/app/lib/common-utils";
 import { fetchDocUserPermissions } from "@/app/admin/permissions/lib/permissios-actions";
 import DocWrapper from "../../../lib/doc-wrapper";
 import { fetchLegalEntities, fetchLegalEntitiesForm } from "../../legal-entities/lib/legal-entities-actions";
+import { fetchRegionsForm } from "../../regions/lib/regions-actions";
 
 export default async function Page() {
   const session = await auth();

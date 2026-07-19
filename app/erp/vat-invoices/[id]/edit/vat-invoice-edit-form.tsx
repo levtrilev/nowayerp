@@ -51,6 +51,9 @@ interface IEditFormProps {
     vat_invoice_goods: VatInvoiceGoodsForm[] | null;
     goods: GoodForm[];
     warehouses: WarehouseForm[];
+    pageUser?: any;
+    query?: string;
+    currentPage?: number;
 }
 
 const DocStatusSchema = z.enum(['draft', 'active', 'deleted']);
@@ -203,6 +206,21 @@ export default function VatInvoiceEditForm(props: IEditFormProps) {
         }));
     }, []);
 
+    // Эффект для обработки закрытия сообщения "Документ сохранен" - возврат на список с сохранением параметров
+    useEffect(() => {
+        if (msgBox.isOKButtonPressed && msgBox.messageBoxText === 'Документ сохранен.' && !msgBox.isMessageBoxOpen) {
+            setIsOKButtonPressed(false);
+            // Preserve search params (page, query) when navigating back
+            const urlParams = new URLSearchParams(window.location.search);
+            const queryParams = urlParams.toString();
+            const queryString = queryParams ? '?' + queryParams : '';
+            // Временно отключаем эффект при первом рендере формы
+            // Эффект срабатывает только после нажатия OK на сообщении "Документ сохранен"
+            // Навигация с сохранением параметров страницы
+            router.push(`/erp/vat-invoices${queryString}`);
+        }
+    }, [msgBox.isOKButtonPressed, msgBox.messageBoxText, msgBox.isMessageBoxOpen, router]);
+
     const validate = () => {
         const res = VatInvoiceFormSchema.safeParse(formData);
         if (res.success) {
@@ -221,20 +239,14 @@ export default function VatInvoiceEditForm(props: IEditFormProps) {
         try {
             if (formData.id === "") {
                 await createVatInvoice(formData);
-                // Force refresh to ensure list updates immediately
-                setTimeout(() => {
-                    router.push('/erp/vat-invoices');
-                }, 2000);
+                // revalidatePath в createVatInvoice уже вызывается
             } else {
                 await Promise.all([
                     updateVatInvoice(formData),
                     deleteMarkedGoodsFromDB(),
                     saveNewGoodsToDB(formData.id, formData.section_id),
                 ]);
-                // Force refresh to ensure list updates immediately  
-                // setTimeout(() => {
-                //     router.push('/erp/vat-invoices');
-                // }, 2000);
+                // revalidatePath в updateVatInvoice уже вызывается
             }
             setIsDocumentChanged(false);
             setMessageBoxText('Документ сохранен.');
@@ -253,12 +265,15 @@ export default function VatInvoiceEditForm(props: IEditFormProps) {
             setIsMessageBoxOpen(true);
         } else if (!isDocumentChanged) {
             // Preserve search params (page, query) when navigating back
-            const urlParams = new URLSearchParams(window.location.search);
-            const queryParams = urlParams.toString();
-            const queryString = queryParams ? '?' + queryParams : '';
+            setIsOKButtonPressed(false); // сброс флага, чтобы эффект не сработал дважды
+            const urlParams = new URLSearchParams();
+            if (props.currentPage && props.currentPage > 1) urlParams.set('page', props.currentPage.toString());
+            if (props.query) urlParams.set('query', props.query);
+            const queryString = urlParams.toString() ? '?' + urlParams.toString() : '';
             router.push(`/erp/vat-invoices${queryString}`);
         }
     };
+
     const handleShowPDF = async () => {
         try {
             const blob = await pdf(<VatInvoicePdfDocument formData={formData} goods={vat_invoice_goods} />).toBlob();
@@ -675,6 +690,7 @@ export default function VatInvoiceEditForm(props: IEditFormProps) {
                                     <button
                                         onClick={handleBackClick}
                                         className="bg-blue-400 text-white w-full rounded-md border p-2 hover:bg-blue-100 hover:text-gray-500 cursor-pointer"
+                                        type="button"
                                     >
                                         {props.readonly ? 'Закрыть' : 'Закрыть и освободить'}
                                     </button>

@@ -11,7 +11,7 @@ import { checkReadonly } from "@/app/lib/common-utils";
 import { UnitForm } from "@/app/lib/definitions";
 import { fetchUnitForm } from "../../lib/units-actions";
 import UnitEditForm from "./unit-edit-form";
-import { fetchObjectsForm } from "@/app/repair/objects/lib/objects-actions";
+import { fetchObjectsForm } from "@/app/erp/objects/lib/objects-actions";
 import NotAuthorized, { isUserAuthorized } from "@/app/lib/not_authorized";
 
 export default async function Page(props: { params: Promise<{ id: string }> }) {

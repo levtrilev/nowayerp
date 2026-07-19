@@ -50,8 +50,8 @@ export default async function Page() {
     <main>
       <Breadcrumbs
         breadcrumbs={[
-          { label: 'Участки', href: '/repair/units' },
-          { label: 'Создать новый', href: '/repair/units/create', active: true },
+          { label: 'Участки', href: '/erp/units' },
+          { label: 'Создать новый', href: '/erp/units/create', active: true },
         ]}
       />
       <div className="flex w-full items-center justify-between">

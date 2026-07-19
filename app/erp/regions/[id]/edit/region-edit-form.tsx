@@ -1,22 +1,22 @@
-
 // Region EditForm
 
 'use client';
 import { useEffect, useState } from "react";
-import { RegionForm, SectionForm } from "@/app/lib/definitions";
-import { updateRegion } from "../../lib/region-actions";
+import { RegionForm } from "@/app/lib/definitions";
+import { formatDateForInput } from "@/app/lib/common-utils";
 import BtnSectionsRef from "@/app/admin/sections/lib/btn-sections-ref";
+import { z } from "zod";
+import { pdf, PDFViewer } from '@react-pdf/renderer';
+// import BtnTaskScheduleRef from "@/app/erp/task-schedules/lib/btn-task-schedule-ref";
 import MessageBoxOKCancel from "@/app/lib/message-box-ok-cancel";
 import {
   setIsCancelButtonPressed, setIsDocumentChanged, setIsMessageBoxOpen, setIsOKButtonPressed,
   setIsShowMessageBoxCancel, setMessageBoxText, useDocumentStore, useIsDocumentChanged, useMessageBox
 } from "@/app/store/useDocumentStore";
+import InputField from "@/app/lib/input-field";
 import { useRouter } from "next/navigation";
-import { upsertTags } from "@/app/lib/tags/tags-actions";
-import { lusitana } from "@/app/ui/fonts";
-import { useAccessTagStore, useUserTagStore } from "@/app/lib/tags/tag-store";
-import { TagInput } from "@/app/lib/tags/tag-input";
-
+import { createRegion, updateRegion } from "../../lib/regions-actions";
+import PdfDocument from "./region-pdf-document";
 
 interface IEditFormProps {
   region: RegionForm;
@@ -24,271 +24,335 @@ interface IEditFormProps {
   unlockAction: ((tableName: string, id: string, userId: string) => Promise<void>) | null;
   readonly: boolean;
 }
+//#region zod schema
+// Note: RegionForm has username: string (required) but we use optional for validation
+// The actual data will come from backend via fetchRegionForm
+const RegionFormSchemaFull = z.object({
+  id: z.string().uuid(),
+  name: z.string().min(2, {
+    message: "Название должно содержать не менее 2-х символов.",
+  }),
+  capital: z.string().min(2, {
+    message: "Название столицы должно содержать не менее 2-х символов.",
+  }),
+  area: z.string().min(2, {
+    message: "Площадь должна содержать не менее 2-х символов.",
+  }),
+  code: z.string().min(2, {
+    message: "Код должен содержать не менее 2-х символов.",
+  }),
+  section_name: z.string().min(1, {
+    message: "Поле Раздел должно быть заполнено.",
+  }),
+  section_id: z.string().min(1, {
+    message: "Поле section_id должно быть заполнено.",
+  }),
+  username: z.string().optional(), // backend provides this
+  timestamptz: z.string().optional(),
+  author_id: z.string(),
+  editor_id: z.string(),
+  tenant_id: z.string(),
+  editing_by_user_id: z.string().nullable(),
+  editing_since: z.string().nullable(),
+  date: z.string().optional(),
+  access_tags: z.array(z.string()).optional(),
+  user_tags: z.array(z.string()).optional(),
+  tenant_name: z.string().optional(),
+});
+const RegionFormSchema = RegionFormSchemaFull.omit({ 
+  id: true, 
+  timestamptz: true, 
+  username: true, 
+  editing_by_user_id: true, 
+  editing_since: true,
+  date: true,
+  access_tags: true,
+  user_tags: true,
+  tenant_name: true 
+});
+
+export type FormData = z.infer<typeof RegionFormSchemaFull>;
+//#endregion
 
 export default function RegionEditForm(props: IEditFormProps) {
-  const [region, setRegion] = useState(props.region);
-  //#region main
-  //================================================================
+
+  //#region unified form hooks and variables 
+
+  const docTenantId = useDocumentStore.getState().documentTenantId;
+  const sessionUserId = useDocumentStore.getState().sessionUser.id;
+  const [showErrors, setShowErrors] = useState(false);
+  // const [formData, setFormData] = useState<FormData>(props.premise);
   const isDocumentChanged = useIsDocumentChanged();
   const msgBox = useMessageBox();
   const router = useRouter();
-  const sessionUser = useDocumentStore.getState().sessionUser;
-  const docTenantId = useDocumentStore.getState().documentTenantId;
-
-  const addUserTag = useUserTagStore().addTag;
-  const addAccessTag = useAccessTagStore().addTag;
   const docChanged = () => {
     setIsDocumentChanged(true);
     setMessageBoxText('Документ изменен. Закрыть без сохранения?');
   };
-  const handleChangeUserTags = (event: any) => {
-    const currentTags = useUserTagStore.getState().selectedTags
-    setRegion((prev) => ({
-      ...prev,
-      user_tags: currentTags,
-    }));
-    docChanged();
-  };
-  const handleChangeAccessTags = (event: any) => {
-    const currentTags = useAccessTagStore.getState().selectedTags
-    setRegion((prev) => ({
-      ...prev,
-      access_tags: currentTags,
-    }));
-    docChanged();
-  };
-  const handleBackClick = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    if (props.unlockAction) await props.unlockAction("regions", region.id, sessionUser.id);
-    if (isDocumentChanged && !msgBox.isOKButtonPressed) {
-      setIsShowMessageBoxCancel(true);
-      setIsMessageBoxOpen(true);
-    } else if (isDocumentChanged && msgBox.isOKButtonPressed) {
-    } else if (!isDocumentChanged) {
-      // router.push('/erp/regions/');
-      window.history.back();
-    }
-  };
-  const handleSaveClick = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    try {
-      await upsertTags(region.user_tags, docTenantId);
-      useDocumentStore.getState().addAllTags(region.user_tags);
-      await upsertTags(region.access_tags, docTenantId);
-      useDocumentStore.getState().addAllTags(region.access_tags);
 
-      await updateRegion(region);
-      // await props.unlockAction(region.id, sessionUser.id); // Разблокировка - убрать после отладки (ведь форма не закрыта)
+  useEffect(() => {
+    setFormData((prev) => ({
+      ...prev,
+      author_id: sessionUserId,
+      editor_id: sessionUserId,
+    }));
+  }, [sessionUserId]);
+  //#endregion
+
+  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+  const [formData, setFormData] = useState<FormData>({
+    ...props.region,
+    date: props.region.date ?? '',
+  } as FormData);
+
+
+  useEffect(() => {
+    setFormData((prev) => ({
+      ...prev,
+      author_id: sessionUserId,
+      tenant_id: docTenantId,
+    }));
+  }, []);
+
+  const validate = () => {
+    const res = RegionFormSchema.safeParse({
+      ...formData,
+      // square: Number(formData.square),
+    });
+    if (res.success) {
+      return undefined;
+    }
+    return res.error.format();
+  }
+  //#region handles
+  const handleSubmit = async (e: React.MouseEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    // if (formData.is_periodic === null) {
+    //   formData.is_periodic = false;
+    // }
+    const errors = validate();
+    if (errors) {
+      setShowErrors(true);
+      console.log("ошибки есть: " + JSON.stringify(errors));
+      // console.log(`tenant_id: ${formData.tenant_id}, section_id: ${formData.section_id}`);
+      // console.log(`author_id: ${formData.author_id}, editor_id: ${formData.editor_id}`);
+      return;
+    }
+    try {
+      if (formData.id === "") {
+        await createRegion(formData);
+        // setMessageBoxText('Документ сохранен.');
+        setTimeout(() => {
+          router.push('/erp/regions');
+        }, 2000);
+      } else {
+        await updateRegion(formData);
+      }
       setIsDocumentChanged(false);
       setMessageBoxText('Документ сохранен.');
     } catch (error) {
-      setMessageBoxText('Документ не сохранен.' + String(error));
+      if (String(error) === 'NEXT_REDIRECT') {
+        setMessageBoxText('Документ не сохранен! :' + String(error));
+      }
+      // alert('Документ не сохранен! :' + String(error));
     }
     setIsShowMessageBoxCancel(false);
     setIsMessageBoxOpen(true);
   }
-  useEffect(() => {
-    // const handleBeforeUnload = () => {
-    //   console.log('beforeunload sessionUserId: ' + sessionUser.id);
-    //   props.unlockAction(region.id, sessionUser.id);
-    // };
-    // // Снимаем блокировку при уходе со страницы
-    // window.addEventListener('beforeunload', handleBeforeUnload);
+  const handleBackClick = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (props.unlockAction) await props.unlockAction("regions", props.region.id, sessionUserId);
 
-    return () => {
-
-      // window.removeEventListener('beforeunload', handleBeforeUnload);
-      // props.unlockAction(region.id, sessionUser.id); // на всякий случай
-
-      // Сброс MessageBox при уходе со страницы
-      setIsDocumentChanged(false);
-      setIsMessageBoxOpen(false);
-      setIsOKButtonPressed(false);
-      setIsCancelButtonPressed(false);
+    if (isDocumentChanged && !msgBox.isOKButtonPressed) {
       setIsShowMessageBoxCancel(true);
-      setMessageBoxText('');
-    };
-  }, []);
-
-  useEffect(() => {
-    if (msgBox.isOKButtonPressed && msgBox.messageBoxText === 'Документ изменен. Закрыть без сохранения?') {
-      // router.push('/erp/regions/');
-      window.history.back();
+      setIsMessageBoxOpen(true);
+    } else {
+      // Preserve search params (page, query) when navigating back
+      const urlParams = new URLSearchParams(window.location.search);
+      const queryParams = urlParams.toString();
+      const queryString = queryParams ? '?' + queryParams : '';
+      router.push(`/erp/regions${queryString}`);
     }
-    setIsOKButtonPressed(false);
-    setIsCancelButtonPressed(false);
-    setIsDocumentChanged(false);
-    setIsMessageBoxOpen(false);
-    setIsShowMessageBoxCancel(true);
-  }, [msgBox.isOKButtonPressed, router]);
-
-  // useEffect(() => {
-  //   useDocumentStore.getState().setAllTags(props.allTags);
-  // }, [props.allTags]);
-
-  const handleSelectSection = (new_section_id: string, new_section_name: string) => {
-    setRegion((prev) => ({
+  };
+  const handleSelectSection = (new_section_id: string, new_section_name: string, new_section_tenant_id: string) => {
+    setFormData((prev) => ({
       ...prev,
       section_id: new_section_id,
       section_name: new_section_name,
+      tenant_id: new_section_tenant_id,
+    }));
+    useDocumentStore.getState().setDocumentTenantId(new_section_tenant_id);
+    docChanged();
+  };
+
+  const handleSelectTaskSchedule = (new_ts_id: string, new_ts_name: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      task_schedule_id: new_ts_id,
+      task_schedule_name: new_ts_name,
     }));
     docChanged();
   };
-  //================================================================
+  // handleRedirectBack is intentionally not used - use handleBackClick instead
+  const handleShowPDF = async () => {
+    try {
+      // Создаем PDF из компонента PdfDocument
+      const blob = await pdf(<PdfDocument formData={formData} />).toBlob();
+
+      // Создаем URL для Blob-объекта
+      const url = URL.createObjectURL(blob);
+
+      setPdfUrl(url);
+
+    } catch (error) {
+      console.error('Ошибка при экспорте PDF:', error);
+
+    }
+  };
+  const handleClosePDF = () => {
+    if (pdfUrl) {
+      // Освобождаем ресурсы Blob-URL
+      URL.revokeObjectURL(pdfUrl);
+      // Убираем iframe
+      setPdfUrl(null);
+    }
+  };
+  const handleInputChange = (field: string, value: string | Date) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+    docChanged();
+  };
   //#endregion
+
+  const errors = showErrors ? validate() : undefined;
 
   return (
     <div>
-      <div className="flex flex-col md:flex-row gap-4 w-full">
-        {/* first column */}
-        <div className="flex flex-col gap-4 w-full md:w-1/2">
+      {!pdfUrl && (
+        <form id="task-form" onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <div className="flex flex-col md:flex-row gap-4 w-full">
 
-          {/* name */}
-          <div className="flex justify-between mt-1">
-            <label
-              htmlFor="name"
-              className="text-sm text-blue-900 font-medium flex items-center p-2"
-            >
-              Название:
-            </label>
-            <input
-              id="name"
-              type="text"
-              className="w-7/8 disabled:text-gray-400 disabled:bg-gray-100 break-words control rounded-md border border-gray-200 p-2"
-              disabled={props.readonly}
-              value={region.name}
-              onChange={(e) => { setRegion((prev) => ({ ...prev, name: e.target.value, })); docChanged(); }}
-            />
+            {/* first column */}
+            <div className="flex flex-col gap-4 w-full md:w-1/2">
+
+              {/* name */}
+              <InputField name="name" value={formData.name}
+                label="Название:" type="text" w={["w-4/16", "w-13/16"]}
+                onChange={(value) => handleInputChange('name', value)}
+                readonly={props.readonly}
+                errors={errors?.name?._errors as string[] | undefined}
+              />
+
+              {/* capital */}
+              <InputField name="capital" value={formData.capital}
+                label="Столица:" type="text" w={["w-4/16", "w-13/16"]}
+                onChange={(value) => handleInputChange('capital', value)}
+                readonly={props.readonly}
+                errors={errors?.capital?._errors as string[] | undefined}
+              />
+
+              {/* area */}
+              <InputField name="area" value={formData.area}
+                label="Площадь:" type="text" w={["w-4/16", "w-13/16"]}
+                onChange={(value) => handleInputChange('area', value)}
+                readonly={props.readonly}
+                errors={errors?.area?._errors as string[] | undefined}
+              />
+
+              {/* code */}
+              <InputField name="code" value={formData.code}
+                label="Код:" type="text" w={["w-4/16", "w-13/16"]}
+                onChange={(value) => handleInputChange('code', value)}
+                readonly={props.readonly}
+                errors={errors?.code?._errors as string[] | undefined}
+              />
+
+              {/* section_name */}
+              <InputField name="section_name" value={formData.section_name as string}
+                label="Раздел:" type="text" w={["w-6/16", "w-11/16"]}
+                // onChange={(value) => handleInputChange('section_id', value)}
+                onChange={(value) => { }}
+                refBook={<BtnSectionsRef handleSelectSection={handleSelectSection} />}
+                readonly={props.readonly}
+                errors={errors?.section_name?._errors as string[] | undefined}
+              />
+            </div>
+
+            {/* second column */}
+            <div className="flex flex-col gap-4 w-full md:w-1/2">
+
+
+            </div>
           </div>
-          {/* capital */}
-          <div className="flex justify-between mt-1">
-            <label
-              htmlFor="capital"
-              className="w-2/8 text-sm text-blue-900 font-medium flex items-center p-2">
-              Столица:
-            </label>
-            <input
-              id="capital"
-              type="text"
-              className="w-13/16 disabled:text-gray-400 disabled:bg-gray-100 break-words control rounded-md border border-gray-200 p-2"
-              disabled={props.readonly}
-              value={region.capital}
-              onChange={(e) => { setRegion((prev) => ({ ...prev, capital: e.target.value, })); docChanged(); }}
-            />
-          </div>
-          {/* section_name */}
-          <div className="flex justify-between mt-1">
-            <label
-              htmlFor="section_name"
-              className="w-2/8 text-sm text-blue-900 font-medium flex items-center p-2">
-              Раздел:
-            </label>
-            <input
-              id="section_name"
-              type="text"
-              name="section_name"
-              className="w-13/16 disabled:text-gray-400 disabled:bg-gray-100 break-words control rounded-md border border-gray-200 p-2"
-              disabled={props.readonly}
-              value={region.section_name}
-              readOnly
-              onChange={(e) => { setRegion((prev) => ({ ...prev, section_id: e.target.value, })); docChanged(); }}
-            // onKeyDown={(e) => handleKeyDown(e)}
-            />
-            {!props.readonly && <BtnSectionsRef handleSelectSection={handleSelectSection} />}
-          </div>
-        </div>
-        {/* second column */}
-        <div className="flex flex-col gap-4 w-full md:w-1/2">
-          {/* area */}
-          <div className="flex justify-between mt-1">
-            <label
-              htmlFor="area"
-              className="w-2/8 text-sm text-blue-900 font-medium flex items-center p-2">
-              Округ:
-            </label>
-            <input
-              id="area"
-              type="text"
-              className="w-13/16 disabled:text-gray-400 disabled:bg-gray-100 break-words control rounded-md border border-gray-200 p-2"
-              disabled={props.readonly}
-              value={region.area}
-              onChange={(e) => { setRegion((prev) => ({ ...prev, area: e.target.value, })); docChanged(); }}
-            />
-          </div>
-          {/* code */}
-          <div className="flex justify-between mt-1">
-            <label
-              htmlFor="code"
-              className="w-2/8 text-sm text-blue-900 font-medium flex items-center p-2">
-              Код:
-            </label>
-            <input
-              id="code"
-              type="text"
-              className="w-13/16 disabled:text-gray-400 disabled:bg-gray-100 break-words control rounded-md border border-gray-200 p-2"
-              disabled={props.readonly}
-              value={region.code}
-              onChange={(e) => { setRegion((prev) => ({ ...prev, code: e.target.value, })); docChanged(); }}
-            />
-          </div>
-        </div>
-      </div>
-      {/* user_tags */}
-      <div className="flex max-w-[1150] mt-4">
-        <label
-          htmlFor="user_tags"
-          className={`${lusitana.className} w-[130px] font-medium flex items-center p-2 text-gray-500`}>
-          Тэги:
-        </label>
-        <TagInput
-          id="user_tags"
-          value={region.user_tags}
-          onAdd={addUserTag}
-          handleFormInputChange={handleChangeUserTags}
-          readonly={props.readonly}
-        />
-      </div>
-      {/* access_tags */}
-      <div className="flex max-w-[1150] mt-4">
-        <label
-          htmlFor="access_tags"
-          className={`${lusitana.className} w-[130px] font-medium flex items-center p-2 text-gray-500`}>
-          Тэги доступа:
-        </label>
-        <TagInput
-          id="access_tags"
-          value={region.access_tags}
-          onAdd={addAccessTag}
-          handleFormInputChange={handleChangeAccessTags}
-          readonly={props.readonly}
-        />
-      </div>
-      {/* button area */}
-      <div className="flex justify-between mt-4 mr-4">
-        <div className="flex w-full md:w-1/2">
-          <div className="w-full md:w-1/2">
-            <button
-              disabled={props.readonly}
-              onClick={handleSaveClick}
-              className={`w-full rounded-md border p-2 ${props.readonly
-                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                : 'bg-blue-400 text-white hover:bg-blue-100 hover:text-gray-500 cursor-pointer'
-                }`}
-            >
-              Сохранить
-            </button>
-          </div>
-          <div className="w-full md:w-1/2">
-            <button
-              onClick={handleBackClick}
-              className="bg-blue-400 text-white w-full rounded-md border p-2
+          {/* button area */}
+          <div className="flex justify-between mt-4 mr-4">
+            <div className="flex w-full md:w-3/4">
+              <div className="w-full md:w-1/2">
+                <button
+                  disabled={props.readonly}
+                  className={`w-full rounded-md border p-2 ${props.readonly
+                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    : 'bg-blue-400 text-white hover:bg-blue-100 hover:text-gray-500 cursor-pointer'
+                    }`}
+                  type="submit">
+                  Сохранить
+                </button>
+              </div>
+              <div className="w-full md:w-1/2">
+                <button
+                  onClick={handleBackClick}
+                  className="bg-blue-400 text-white w-full rounded-md border p-2
                  hover:bg-blue-100 hover:text-gray-500 cursor-pointer"
-            >
-              {props.readonly ? 'Закрыть' : 'Закрыть и освободить'}
-            </button>
+                >
+                  {props.readonly ? 'Закрыть' : 'Закрыть и освободить'}
+                </button>
+              </div>
+              <div className="w-full md:w-1/2">
+                <button
+                  type="button"
+                  onClick={handleShowPDF}
+                  className="bg-green-400 text-white w-full rounded-md border p-2 hover:bg-green-100 hover:text-gray-500 cursor-pointer"
+                >
+                  Открыть PDF
+                </button>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
+        </form>
+      )}
+      {/* Кнопка закрытия PDF*/}
+      {
+        pdfUrl &&
+        <button
+          onClick={handleClosePDF}
+          style={{
+            position: 'absolute',
+            top: '50px',
+            right: '50px',
+            padding: '5px 10px',
+            background: 'red',
+            color: 'white',
+            border: 'none',
+            borderRadius: '5px',
+            cursor: 'pointer',
+          }}
+        >
+          Закрыть PDF
+        </button>
+      }
+      {/* Отображение PDF в iframe */}
+      {pdfUrl && (
+        <iframe
+          src={pdfUrl}
+          style={{
+            width: '100%',
+            height: '1200px',
+            border: '2px solid red', // Временная граница для отладки
+            marginTop: '20px',
+          }}
+          title="PDF Preview"
+        />
+      )}
       <MessageBoxOKCancel />
     </div>
   );

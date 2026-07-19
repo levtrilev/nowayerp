@@ -41,7 +41,7 @@ export default async function UnitsTable({
                     <tr key={unit.id} className="group">
                       <td className="w-4/12 overflow-hidden whitespace-nowrap bg-white py-2 pl-6 pr-3 text-sm text-black">
                         <a
-                          href={`/erp/units/${unit.id}/edit`}
+                          href={`/erp/units/${unit.id}/edit?query=${encodeURIComponent(query)}&page=${currentPage}`}
                           className="text-blue-800 underline"
                         >
                           {unit.name}
@@ -75,13 +75,13 @@ export default async function UnitsTable({
                     className="mb-4 rounded-lg bg-white p-4 shadow-sm"
                   >
                     <div className="flex justify-between items-center mb-2">
-                      <h3 className="text-lg font-medium text-blue-800 underline">
-                        <a href={`/repair/units/${unit.id}/edit`}>
+                       <h3 className="text-lg font-medium text-blue-800 underline">
+                        <a href={`/erp/units/${unit.id}/edit?query=${encodeURIComponent(query)}&page=${currentPage}`}>
                           {unit.name}
                         </a>
-                      </h3>
+                       </h3>
                       <div className="flex gap-2">
-                        <BtnEditUnitLink id={unit.id} />
+                        <BtnEditUnitLink id={unit.id} query={query} currentPage={currentPage} />
                           {!readonly_permission &&
                             <BtnDeleteUnit
                               id={unit.id}

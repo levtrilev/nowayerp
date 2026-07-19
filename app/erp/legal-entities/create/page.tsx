@@ -7,8 +7,9 @@ import DocWrapper from "@/app/lib/doc-wrapper";
 import { fetchDocUserPermissions } from "@/app/admin/permissions/lib/permissios-actions";
 import { LegalEntityForm } from "@/app/lib/definitions";
 import LegalEntityEditForm from "../[id]/edit/legal-entity-edit-form";
-import { fetchRegionsForm } from "../../regions/lib/region-actions";
+// import { fetchRegionsForm } from "../../regions/lib/region-actions";
 import { fetchCarsForm } from "../../cars/lib/cars-actions";
+import { fetchRegionsForm } from "../../regions/lib/regions-actions";
 
 export default async function Page() {
     //#region unified hooks and variables

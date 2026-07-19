@@ -18,7 +18,7 @@ export default function RegionsRefTable(props: IRegionsRefTableProps) {
     return (
         <div className="w-full">
             <p>Выберите регион:</p>
-            <RefSearch callback={handleSearch} term={props.term} elementIdPrefix="" />
+            <RefSearch callback={handleSearch} term={props.term} elementIdPrefix="region" />
             <div className="mt-0 flow-root">
                 {/* Таблица для больших экранов */}
                 <div className="overflow-x-auto md:block hidden">
@@ -31,7 +31,7 @@ export default function RegionsRefTable(props: IRegionsRefTableProps) {
                                             Название
                                         </th>
                                         <th scope="col" className="w-6/16 px-3 py-5 font-medium">
-                                            Округ
+                                            Столица
                                         </th>
                                         <th scope="col" className="w-1/8 px-3 py-5 font-medium">
                                             Код
@@ -44,7 +44,7 @@ export default function RegionsRefTable(props: IRegionsRefTableProps) {
                         <div className="max-h-[300px] overflow-y-auto rounded-md bg-gray-50 p-2 md:pt-0">
                             <table className="table-fixed hidden w-full rounded-md text-gray-900 md:table">
                                 <tbody className="divide-y divide-gray-200 text-gray-900">
-                                    {props.regions.map((region) => ((
+                                    {props.regions.map((region) => (((
                                         region.name.toLowerCase().includes(props.term.toLowerCase())
                                         || props.term.length === 0) &&
                                         <tr key={region.id} className="group">
@@ -65,13 +65,13 @@ export default function RegionsRefTable(props: IRegionsRefTableProps) {
                                                 </div>
                                             </td>
                                             <td className="w-6/16 overflow-hidden whitespace-nowrap bg-white px-4 py-1 text-sm">
-                                                {region.area}
+                                                {region.capital.substring(0, 36)}
                                             </td>
                                             <td className="w-1/8 overflow-hidden whitespace-nowrap bg-white px-4 py-1 text-sm">
-                                                {region.code}
+                                                {region.code.substring(0, 36)}
                                             </td>
                                         </tr>
-                                    ))}
+                                    )))}
                                 </tbody>
                             </table>
                         </div>
@@ -102,7 +102,7 @@ export default function RegionsRefTable(props: IRegionsRefTableProps) {
                                             {region.name.substring(0, 36)}
                                         </a>
                                     </div>
-                                    <div className="text-gray-500">{region.area}</div>
+                                    <div className="text-gray-500">{region.capital}</div>
                                     <div className="text-gray-500">{region.code}</div>
                                 </div>
                             ))}

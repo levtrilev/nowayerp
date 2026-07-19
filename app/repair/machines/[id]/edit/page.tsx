@@ -10,7 +10,7 @@ import { checkReadonly } from "@/app/lib/common-utils";
 import { MachineForm } from "@/app/lib/definitions";
 import { fetchMachineForm } from "../../lib/machines-actions";
 import MachineEditForm from "./machine-edit-form";
-import { fetchUnitsForm } from "@/app/repair/units/lib/units-actions";
+import { fetchUnitsForm } from "@/app/erp/units/lib/units-actions";
 import { fetchLocationsForm } from "@/app/erp/locations/lib/locations-actions";
 import NotAuthorized, { isUserAuthorized } from "@/app/lib/not_authorized";
 

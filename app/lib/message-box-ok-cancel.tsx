@@ -24,8 +24,8 @@ const MessageBoxOKCancel: FC = () => {
           <button
             onClick={() => {
               if (msgBox.messageBoxText === 'Документ сохранен.') {
-                // Просто закрываем, НЕ устанавливая isOKButtonPressed
-                // setIsMessageBoxOpen(false);
+                setIsOKButtonPressed(true);
+                setIsCancelButtonPressed(false);
                 setMessageBoxText('');
               } else {
                 setIsOKButtonPressed(true); 

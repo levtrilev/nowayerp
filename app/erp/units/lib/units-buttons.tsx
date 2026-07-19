@@ -8,7 +8,7 @@ import { Unit } from '@/app/lib/definitions';
 export function CreateUnit({ readonly }: { readonly: boolean }) {
   return (
     <Link
-      href={!readonly ? "/repair/units/create" : "#"}
+      href={!readonly ? "/erp/units/create" : "#"}
       className={`flex h-10 items-center rounded-lg 
         ${readonly ? 'bg-gray-300 px-4 text-sm font-medium text-gray-500 transition-colors hover:bg-gray-400'
           : 'bg-blue-600 px-4 text-sm font-medium text-white transition-colors hover:bg-blue-500'}
@@ -34,12 +34,17 @@ export function BtnUpdateUnit({ unit }: { unit: Unit }) {
   );
 }
 
-export function BtnEditUnitLink({ id }: { id: string }) {
+export function BtnEditUnitLink({ id, query, currentPage }: { id: string, query?: string, currentPage?: number }) {
   const LinkIcon = PencilIcon;
+  const urlParams = new URLSearchParams();
+  if (query) urlParams.set('query', query);
+  if (currentPage) urlParams.set('page', currentPage.toString());
+  const queryString = urlParams.toString();
+  const href = `/erp/units/${id}/edit` + (queryString ? '?' + queryString : '');
   return (
     <Link
       key={"Edit"}
-      href={"/repair/units/" + id + "/edit"}
+      href={href}
       className='flex h-10 items-center justify-center space-x-2 rounded-md border border-gray-200 
       bg-white p-2 text-sm font-medium hover:bg-gray-100 md:flex-none md:justify-start md:p-2 md:px-3'
     >

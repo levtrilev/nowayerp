@@ -2,10 +2,9 @@
 // LegalEntity Page
 
 import { fetchPremiseForm } from "../../lib/premises-actions";
-import { DocUserPermissions, PremiseForm, User } from "@/app/lib/definitions";
+import { PremiseForm, User } from "@/app/lib/definitions";
 import { lusitana } from "@/app/ui/fonts";
 import { fetchSectionById, fetchSectionsForm } from "@/app/admin/sections/lib/sections-actions";
-import { fetchRegionsForm } from "@/app/erp/regions/lib/region-actions";
 import PremiseEditForm from "./premise-edit-form";
 import { auth, getUser } from "@/auth";
 import { getCurrentSections } from "@/app/lib/common-actions";
@@ -13,7 +12,8 @@ import { fetchDocUserPermissions } from "@/app/admin/permissions/lib/permissios-
 import DocWrapper from "../../../../lib/doc-wrapper";
 import { checkReadonly } from "@/app/lib/common-utils";
 import NotAuthorized, { isUserAuthorized } from "@/app/lib/not_authorized";
-import { fetchLegalEntities, fetchLegalEntitiesForm } from "@/app/erp/legal-entities/lib/legal-entities-actions";
+import { fetchLegalEntitiesForm } from "@/app/erp/legal-entities/lib/legal-entities-actions";
+import { fetchRegionsForm } from "@/app/erp/regions/lib/regions-actions";
 
 async function Page(props: { params: Promise<{ id: string }> }) {
 

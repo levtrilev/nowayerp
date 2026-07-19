@@ -1,26 +1,29 @@
+// tasks-table.tsx
 
-// Regions Table
+import { lusitana } from '@/app/ui/fonts';
+import Search from '@/app/ui/search';
 
-import MessageBoxSrv from '@/app/lib/message-box-srv';
-import { fetchFilteredRegions } from './region-actions';
+import { Region } from '@/app/lib/definitions';
+// import { BtnEditTaskLink } from './task-buttons';
+// import BtnDeleteTask from './btn-delete-task';
+import { fetchFilteredRegions } from './regions-actions';
 import BtnDeleteRegion from './btn-delete-region';
+import { BtnEditRegionLink } from './regions-buttons';
 
 export default async function RegionsTable({
   query,
   currentPage,
   current_sections,
+  user_id,
   readonly_permission,
-  user_id
 }: {
   query: string;
   currentPage: number;
   current_sections: string;
-  readonly_permission: boolean; 
   user_id: string;
+  readonly_permission: boolean;
 }) {
-
   const regions = await fetchFilteredRegions(query, currentPage, current_sections);
-  // console.log('fetchFilteredRegions');
 
   return (
     <div className="w-full">
@@ -33,56 +36,29 @@ export default async function RegionsTable({
               <table className="table-fixed hidden w-full rounded-md text-gray-900 md:table">
                 <thead className="rounded-md bg-gray-50 text-left text-sm font-normal">
                   <tr>
-                    <th scope="col" className="w-4/16 overflow-hidden px-0 py-5 font-medium sm:pl-6">
-                      Название
-                    </th>
-                    <th scope="col" className="w-4/16 px-3 py-5 font-medium">
-                      Столица
-                    </th>
-                    <th scope="col" className="w-3/16 px-3 py-5 font-medium">
-                      Округ
-                    </th>
-                    <th scope="col" className="w-1/16 px-3 py-5 font-medium">
-                      Код
-                    </th>
-                    <th scope="col" className="w-4/16 px-4 py-5 font-medium">
-                      Раздел
-                    </th>
-                    <th scope="col" className="w-1/16 px-4 py-5 font-medium">
-
-                    </th>
+                    <th scope="col" className="w-4/12 px-4 py-5 font-medium sm:pl-6">Название</th>
+                    <th scope="col" className="w-1/12 px-4 py-5 font-medium"></th>
                   </tr>
                 </thead>
 
                 <tbody className="divide-y divide-gray-200 text-gray-900">
                   {regions.map((region) => (
                     <tr key={region.id} className="group">
-                      <td className="w-4/16 overflow-hidden whitespace-nowrap text-ellipsis bg-white py-1 pl-0 text-left  
-                      pr-3 text-sm text-black group-first-of-type:rounded-md group-last-of-type:rounded-md sm:pl-6">
-                        <div className="flex items-left gap-3">
-                          <a
-                            href={"/erp/regions/" + region.id + "/edit"}
-                            className="text-blue-800 underline"
-                          >{region.name.substring(0, 36)}</a>
-                        </div>
+                      <td className="w-4/12 overflow-hidden whitespace-nowrap bg-white py-2 pl-6 pr-3 text-sm text-black">
+                        <a
+                          href={`/erp/regions/${region.id}/edit`}
+                          className="text-blue-800 underline"
+                        >
+                          {region.name}
+                        </a>
                       </td>
-                      <td className="w-4/16 overflow-hidden whitespace-nowrap bg-white px-4 py-1 text-sm">
-                        {region.capital}
-                      </td>
-                      <td className="w-3/16 overflow-hidden whitespace-nowrap bg-white px-4 py-1 text-sm">
-                        {region.area}
-                      </td>
-                      <td className="w-1/16 overflow-hidden whitespace-nowrap bg-white px-4 py-1 text-sm">
-                        {region.code}
-                      </td>
-                      <td className="w-4/16 overflow-hidden whitespace-nowrap bg-white px-4 py-1 text-sm group-first-of-type:rounded-md group-last-of-type:rounded-md">
-                        {region.section_name}
-                      </td>
-                      <td className="w-1/16 whitespace-nowrap pl-4 py-1 pr-3">
+
+                      <td className="w-1/12 whitespace-nowrap py-2 pr-3">
                         <div className="flex justify-end gap-3">
                           {!readonly_permission &&
                             <BtnDeleteRegion
-                              region={region}
+                              id={region.id}
+                              name={region.name}
                               user_id={user_id}
                               readonly_permission={readonly_permission}
                               current_sections={current_sections}
@@ -103,36 +79,23 @@ export default async function RegionsTable({
                   >
                     <div className="flex justify-between items-center mb-2">
                       <h3 className="text-lg font-medium text-blue-800 underline">
-                        <a href={"/erp/regions/" + region.id + "/edit"}>
-                          {region.name.substring(0, 36)}
+                        <a href={`/erp/regions/${region.id}/edit`}>
+                          {region.name}
                         </a>
                       </h3>
                       <div className="flex gap-2">
+                        <BtnEditRegionLink id={region.id} />
                         {!readonly_permission &&
                           <BtnDeleteRegion
-                            region={region}
+                            id={region.id}
+                            name={region.name}
                             user_id={user_id}
                             readonly_permission={readonly_permission}
                             current_sections={current_sections}
                           />}                      </div>
                     </div>
                     <div className="grid grid-cols-2 gap-2">
-                      <div className="col-span-1">
-                        <p className="text-sm text-gray-500">Столица</p>
-                        <p className="text-sm font-medium">{region.capital}</p>
-                      </div>
-                      <div className="col-span-1">
-                        <p className="text-sm text-gray-500">Округ</p>
-                        <p className="text-sm font-medium">{region.area}</p>
-                      </div>
-                      <div className="col-span-1">
-                        <p className="text-sm text-gray-500">Код</p>
-                        <p className="text-sm font-medium">{region.code}</p>
-                      </div>
-                      <div className="col-span-1">
-                        <p className="text-sm text-gray-500">Раздел</p>
-                        <p className="text-sm font-medium">{region.section_name}</p>
-                      </div>
+
                     </div>
                   </div>
                 ))}

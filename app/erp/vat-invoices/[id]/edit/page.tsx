@@ -16,7 +16,13 @@ import NotAuthorized, { isUserAuthorized } from "@/app/lib/not_authorized";
 import { fetchGoodsForm } from "@/app/erp/goods/lib/goods-actions";
 import { fetchWarehousesForm } from "@/app/erp/warehouses/lib/warehouses-actions";
 
-async function Page(props: { params: Promise<{ id: string }> }) {
+async function Page(props: { 
+  params: Promise<{ id: string }>;
+  searchParams?: Promise<{
+    query?: string;
+    page?: string;
+  }>;
+}) {
   //#region unified hooks and variables
   const session = await auth();
   const session_user = session ? session.user : null;
@@ -37,9 +43,13 @@ async function Page(props: { params: Promise<{ id: string }> }) {
   if (!isUserAuthorized(userPermissions, pageUser)) {
     return <NotAuthorized />
   }
-  const params = await props.params;
-  const id = params.id;
-  //#endregion
+   const params = await props.params;
+   const id = params.id;
+   
+   const searchParams = await props.searchParams;
+   const query = searchParams?.query || '';
+   const currentPage = Number(searchParams?.page) || 1;
+   //#endregion
 
   const invoice: VATInvoiceForm = await fetchVatInvoiceForm(id, current_sections);
   if (!invoice) {
@@ -102,24 +112,27 @@ async function Page(props: { params: Promise<{ id: string }> }) {
         )}
       </div>
       <h3 className="text-xs font-medium text-gray-400">id: {id}</h3>
-      <DocWrapper
-        pageUser={pageUser}
-        userSections={sections}
-        userPermissions={userPermissions}
-        docTenantId={tenant_id}
-      >
-        <VatInvoiceEditForm
-          invoice={invoice}
-          lockedByUserId={freshRecord.editing_by_user_id}
-          unlockAction={unlockRecord}
-          readonly={readonly}
-          customers={customers}
-          persons={persons}
-          goods={goods}
-          warehouses={warehouses}
-          vat_invoice_goods={vat_invoice_goods}
-        />
-      </DocWrapper>
+       <DocWrapper
+         pageUser={pageUser}
+         userSections={sections}
+         userPermissions={userPermissions}
+         docTenantId={tenant_id}
+       >
+         <VatInvoiceEditForm
+           invoice={invoice}
+           lockedByUserId={freshRecord.editing_by_user_id}
+           unlockAction={unlockRecord}
+           readonly={readonly}
+           customers={customers}
+           persons={persons}
+           goods={goods}
+           warehouses={warehouses}
+           vat_invoice_goods={vat_invoice_goods}
+           pageUser={pageUser}
+           query={query}
+           currentPage={currentPage}
+         />
+       </DocWrapper>
     </div>
   );
 }

@@ -135,12 +135,16 @@ export default function ObjectEditForm(props: IEditFormProps) {
   const handleBackClick = async (e: React.MouseEvent) => {
     e.preventDefault();
     if (props.unlockAction) await props.unlockAction("objects", props.object.id, sessionUserId);
+
     if (isDocumentChanged && !msgBox.isOKButtonPressed) {
       setIsShowMessageBoxCancel(true);
       setIsMessageBoxOpen(true);
-    } else if (isDocumentChanged && msgBox.isOKButtonPressed) {
-    } else if (!isDocumentChanged) {
-      window.history.back();
+    } else {
+      // Preserve search params (page, query) when navigating back
+      const urlParams = new URLSearchParams(window.location.search);
+      const queryParams = urlParams.toString();
+      const queryString = queryParams ? '?' + queryParams : '';
+      router.push(`/erp/objects${queryString}`);
     }
   };
   const handleSelectSection = (new_section_id: string, new_section_name: string, new_section_tenant_id: string) => {
@@ -162,9 +166,7 @@ export default function ObjectEditForm(props: IEditFormProps) {
     }));
     docChanged();
   };
-  const handleRedirectBack = () => {
-    window.history.back(); // Возвращает пользователя на предыдущую страницу
-  };
+  // handleRedirectBack is intentionally not used - use handleBackClick instead
   const handleShowPDF = async () => {
     try {
       // Создаем PDF из компонента PdfDocument

@@ -9,8 +9,8 @@ import { LegalEntityForm } from "@/app/lib/definitions";
 import { fetchLegalEntityForm } from "../../lib/legal-entities-actions";
 import LegalEntityEditForm from "./legal-entity-edit-form";
 import NotAuthorized, { isUserAuthorized } from "@/app/lib/not_authorized";
-import { fetchRegionsForm } from "@/app/erp/regions/lib/region-actions";
 import { fetchCarsForm } from "@/app/erp/cars/lib/cars-actions";
+import { fetchRegionsForm } from "@/app/erp/regions/lib/regions-actions";
 
 async function Page(props: { params: Promise<{ id: string }> }) {
     //#region unified hooks and variables

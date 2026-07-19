@@ -20,7 +20,7 @@ import InputField from "@/app/lib/input-field";
 import { useRouter } from "next/navigation";
 import { createUnit, updateUnit } from "../../lib/units-actions";
 import PdfDocument from "./unit-pdf-document";
-import BtnObjectsRef from "@/app/repair/objects/lib/btn-objects-ref";
+import BtnObjectsRef from "@/app/erp/objects/lib/btn-objects-ref";
 
 interface IEditFormProps {
   unit: UnitForm;
@@ -115,7 +115,11 @@ export default function UnitEditForm(props: IEditFormProps) {
       setIsShowMessageBoxCancel(true);
       setIsMessageBoxOpen(true);
     } else {
-      window.history.back();
+      // Preserve search params (page, query) when navigating back
+      const urlParams = new URLSearchParams(window.location.search);
+      const queryParams = urlParams.toString();
+      const queryString = queryParams ? '?' + queryParams : '';
+      router.push(`/erp/units${queryString}`);
     }
   };
 

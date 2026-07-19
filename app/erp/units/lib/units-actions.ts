@@ -46,7 +46,7 @@ export async function createUnit(unit: Unit) {
     throw new Error("Не удалось создать Unit:" + String(error));
   }
 
-  revalidatePath("/repair/units");
+  revalidatePath("/erp/units");
 }
 
 //#endregion
@@ -94,7 +94,7 @@ export async function updateUnit(unit: Unit) {
     throw new Error("Ошибка базы данных: Не удалось обновить Unit: " + error);
   }
 
-  revalidatePath("/repair/units");
+  revalidatePath("/erp/units");
 }
 
 export async function deleteUnit(id: string) {
@@ -104,7 +104,7 @@ export async function deleteUnit(id: string) {
     console.error("Ошибка удаления Unit:", error);
     throw new Error("Ошибка базы данных: Не удалось удалить Unit.");
   }
-  revalidatePath("/repair/units");
+  revalidatePath("/erp/units");
 }
 
 //#endregion
